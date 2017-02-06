@@ -1,5 +1,5 @@
 {
-  "name": "electron-vlax",
+  "name": "quick-translator-replay",
   "version": "0.0.0",
   "description": "An electron-vue project",
   "scripts": {
@@ -19,8 +19,8 @@
     "postinstall": "npm run lint:fix && cd app && npm install"
   },
   "build": {
-    "productName": "ElectronVue",
-    "appId": "org.simulatedgreg.electron-vue",
+    "productName": "Quick Translator",
+    "appId": "phu.quang.le.quick-translator-replay",
     "category": "public.app-category.tools",
     "dmg": {
       "contents": [

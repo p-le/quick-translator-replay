@@ -1,6 +1,7 @@
 'use strict'
 
 import { app, BrowserWindow } from 'electron'
+import * as fs from 'fs'
 
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development'
@@ -19,8 +20,12 @@ function createWindow () {
     mainWindow = null
   })
 
-  // eslint-disable-next-line no-console
   console.log('mainWindow opened')
+
+  fs.readFile(`${__dirname}/dictionary/Shortcuts.txt`, 'utf8', (err, contents) => {
+    if (err) console.log(err)
+    else console.log(contents)
+  })
 }
 
 app.on('ready', createWindow)
