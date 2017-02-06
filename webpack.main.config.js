@@ -20,6 +20,10 @@ let mainConfig = {
         exclude: /node_modules/
       },
       {
+        test: /\.(jpe?g|png|gif|svg|txt)$/i,
+        loader: 'file-loader?name=[name].[ext]'
+      },
+      {
         test: /\.json$/,
         loader: 'json-loader'
       },
