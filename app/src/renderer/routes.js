@@ -1,8 +1,8 @@
 export default [
   {
     path: '/',
-    name: 'landing-page',
-    component: require('components/LandingPageView')
+    name: 'dashboard',
+    component: require('components/Dashboard')
   },
   {
     path: '*',

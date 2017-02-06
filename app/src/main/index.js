@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import * as fs from 'fs'
 
 let mainWindow
@@ -20,6 +20,9 @@ function createWindow () {
     mainWindow = null
   })
 
+  ipcMain.on('translate', (event, args) => {
+    console.log(args)
+  })
   console.log('mainWindow opened')
 
   fs.readFile(`${__dirname}/dictionary/Shortcuts.txt`, 'utf8', (err, contents) => {
@@ -41,3 +44,7 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
+// app.on('browser-window-created', (e, window) => {
+//   window.setMenu(null)
+// })
