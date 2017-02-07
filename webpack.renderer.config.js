@@ -22,7 +22,7 @@ let rendererConfig = {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          loader: 'css-loader'
+          use: 'css-loader'
         })
       },
       {

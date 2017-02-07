@@ -1,7 +1,6 @@
 'use strict'
 
 import { app, BrowserWindow, ipcMain, clipboard } from 'electron'
-import * as fs from 'fs'
 
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development'
@@ -28,11 +27,6 @@ function createWindow () {
     console.log(clipboard.readText())
     event.sender.send('textReceived', clipboard.readText())
   })
-
-  // fs.readFile(`${__dirname}/dictionary/Shortcuts.txt`, 'utf8', (err, contents) => {
-  //   if (err) console.log(err)
-  //   else console.log(contents)
-  // })
 }
 
 app.on('ready', createWindow)
@@ -48,7 +42,3 @@ app.on('activate', () => {
     createWindow()
   }
 })
-
-// app.on('browser-window-created', (e, window) => {
-//   window.setMenu(null)
-// })

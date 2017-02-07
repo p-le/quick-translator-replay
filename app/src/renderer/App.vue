@@ -1,16 +1,24 @@
 <template>
-  <div id="#app">
+  <div id="#app" :style="{'min-height': '100%'}">
     <router-view></router-view>
+      <v-btn floating large info id="take-clipboard"  @click.native="getText($event)" ripple>
+        <v-icon>library_books</v-icon>
+      </v-btn>
   </div>
 </template>
 
 <script>
-  import store from 'renderer/vuex/store'
+  import { ipcRenderer } from 'electron'
+
   export default {
-    store,
     name: 'app',
     mounted () {
       this.$vuetify.init()
+    },
+    methods: {
+      getText (event) {
+        ipcRenderer.send('getText')
+      }
     }
   }
 </script>
@@ -18,4 +26,10 @@
 <style lang="stylus">
   @import '../../../node_modules/vuetify/src/stylus/main';
   @import './css/main.css';
+
+  #take-clipboard {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+  }
 </style>

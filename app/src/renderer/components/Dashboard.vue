@@ -2,17 +2,23 @@
   <v-container>
     <v-row>
       <v-col xs4="xs4">
-        <v-btn @click.native="getText($event)" ripple info>Get Text</v-btn>
+        <div @mouseup="select">
+          {{ text }}
+        </div>
       </v-col>
       <v-col xs8="xs8">
-        {{ text }}
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-  import { ipcRenderer } from 'electron'
+  import { ipcRenderer, remote } from 'electron'
+  const { Menu, MenuItem } = remote
+  const menu = new Menu()
+  menu.append(new MenuItem({ label: 'Add Vietpharse', click () { console.log('item 1 clicked') }}))
+  menu.append(new MenuItem({ type: 'separator'}))
+  menu.append(new MenuItem({ label: 'Add Name' }))
 
   export default {
     name: 'dashboard',
@@ -29,11 +35,12 @@
       })
     },
     methods: {
-      translate (event) {
-        ipcRenderer.send('translate', event.target.value)
-      },
-      getText (event) {
-        ipcRenderer.send('getText')
+      select () {
+        const selected = window.getSelection().toString()
+        if (selected.length > 0) {
+          ipcRenderer.send('translate', selected)
+          menu.popup(remote.getCurrentWindow())
+        }
       }
     }
   }

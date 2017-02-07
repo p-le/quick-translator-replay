@@ -9,5 +9,5 @@ export const incrementMain = ({ commit }) => {
 }
 
 export const receiveText = ({ commit }, payload) => {
-  commit(types.TEXT_RECEIVED, payload)
+  commit(types.RECEIVE_TEXT, payload)
 }

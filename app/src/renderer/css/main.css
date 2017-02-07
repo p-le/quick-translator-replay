@@ -1,4 +1,7 @@
-body {
-    -ms-overflow-style: scrollbar;
-    /*-webkit-app-region:drag;*/
+html, body {
+  height: 100%;
+}
+
+#app {
+  min-height: 100%;
 }
