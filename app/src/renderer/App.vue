@@ -2,7 +2,12 @@
   <div id="#app" :style="{'min-height': '100%'}">
     <v-navbar>
       <v-navbar-logo>Quick Translator</v-navbar-logo>
+      <v-navbar-items>
+        <v-navbar-item v-bind:item="{ href: '#!', icon: isFullscreen ? 'fullscreen_exit' : 'fullscreen' }" @click.native="fullscreen"></v-navbar-item>
+        <v-navbar-item v-bind:item="{ href: '#!', icon: 'clear' }" @click.native="exit"></v-navbar-item>
+      </v-navbar-items>
     </v-navbar>
+    
     <router-view></router-view>
     <v-btn
       v-tooltip:left="{ html: 'Copy Text from Clipboard' }"
@@ -23,12 +28,24 @@
 
   export default {
     name: 'app',
+    data: () => {
+      return {
+        isFullscreen: false
+      }
+    },
     mounted () {
       this.$vuetify.init()
     },
     methods: {
       getText (event) {
         ipcRenderer.send('getText')
+      },
+      fullscreen () {
+        this.isFullscreen = !this.isFullscreen
+        ipcRenderer.send('fullscreen')
+      },
+      exit () {
+        ipcRenderer.send('exit')
       }
     }
   }
@@ -48,5 +65,8 @@
   }
   .navbar {
     -webkit-app-region: drag;
+  }
+  .navbar__items li {
+    -webkit-app-region: no-drag;
   }
 </style>
