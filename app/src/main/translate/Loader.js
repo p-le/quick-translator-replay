@@ -7,7 +7,7 @@ export class Loader {
 
     return new Promise((resolve, reject) => {
       const path = `dicts/PhienAmHanViet.txt`
-      fs.readFile(path, 'ucs2', (err, data) => {
+      fs.readFile(path, 'utf-8', (err, data) => {
         if (err) {
           console.log(err)
           reject(err)

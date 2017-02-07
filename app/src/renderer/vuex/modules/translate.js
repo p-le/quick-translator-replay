@@ -2,6 +2,7 @@ import * as types from '../mutation-types'
 
 const state = {
   text: '',
+  onemeaning: '',
   han: ''
 }
 
@@ -11,6 +12,9 @@ const mutations = {
   },
   [types.TRANSLATE_HAN] (state, payload) {
     state.han = payload.han
+  },
+  [types.TRANSLATE_ONEMEANING] (state, payload) {
+    state.onemeaning = payload.onemeaning
   }
 }
 

@@ -15,3 +15,7 @@ export const receiveText = ({ commit }, payload) => {
 export const translateHan = ({ commit }, payload) => {
   commit(types.TRANSLATE_HAN, payload)
 }
+
+export const translateOnemeaning = ({ commit }, payload) => {
+  commit(types.TRANSLATE_ONEMEANING, payload)
+}

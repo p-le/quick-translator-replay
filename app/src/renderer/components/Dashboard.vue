@@ -11,14 +11,14 @@
             <v-tabs-item id="c">
               <v-card>
                 <v-card-text @mouseup="select">
-                  {{ text }}
+                  <pre>{{ text }}</pre>
                 </v-card-text>
               </v-card>
             </v-tabs-item>
             <v-tabs-item id="cv">
               <v-card>
                 <v-card-text>
-                  {{ han }}
+                  <pre>{{ han }}</pre>
                 </v-card-text>
               </v-card>
             </v-tabs-item>
@@ -34,7 +34,11 @@
           <v-tabs-items>
             <v-tabs-item id="one-meaning">
               <v-card>
-                <v-card-text>...</v-card-text>
+                <v-card-text>
+                  <pre>
+                    {{ onemeaning }}
+                  </pre>
+                </v-card-text>
               </v-card>
             </v-tabs-item>
             <v-tabs-item id="multi-meaning">
@@ -65,9 +69,15 @@
       },
       han () {
         return this.$store.getters.han
+      },
+      onemeaning () {
+        return this.$store.getters.onemeaning
       }
     },
     created () {
+      ipcRenderer.on('onemeaning', (event, arg) => {
+        this.$store.commit('TRANSLATE_ONEMEANING', arg)
+      })
       ipcRenderer.on('han', (event, arg) => {
         this.$store.commit('TRANSLATE_HAN', arg)
       })
@@ -100,5 +110,22 @@ v-container {
 }
 .tabs__tabs {
   height: 50px !important;
+}
+.tabs__item {
+  height: 400px;
+  overflow: auto;
+}
+::-webkit-scrollbar {
+    width: 10px;
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    border-radius: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
 }
 </style>

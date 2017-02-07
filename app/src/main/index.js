@@ -12,8 +12,9 @@ function createWindow () {
   let translator = new Translator()
 
   mainWindow = new BrowserWindow({
+    width: 1280,
     height: 720,
-    width: 1280
+    frame: false
   })
 
   mainWindow.loadURL(winURL)
@@ -27,7 +28,8 @@ function createWindow () {
   })
 
   ipcMain.on('getText', (event, arg) => {
-    const text = clipboard.readText()
+    let text = clipboard.readText()
+    text = text.split(/\r?\n/).filter(line => line !== '').map(line => line.trimLeft()).join('\r\n')
     event.sender.send('textReceived', text)
     translator.translateChinese(event, text)
     translator.translatePhraseOneMeaning(event, text)
