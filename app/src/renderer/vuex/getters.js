@@ -1,2 +1,3 @@
 export const mainCounter = state => state.counters.main
-export const text = state => state.text.text
+export const text = state => state.translate.text
+export const han = state => state.translate.han

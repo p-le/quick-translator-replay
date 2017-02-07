@@ -11,3 +11,7 @@ export const incrementMain = ({ commit }) => {
 export const receiveText = ({ commit }, payload) => {
   commit(types.RECEIVE_TEXT, payload)
 }
+
+export const translateHan = ({ commit }, payload) => {
+  commit(types.TRANSLATE_HAN, payload)
+}

@@ -23,11 +23,15 @@ function createWindow () {
   })
 
   ipcMain.on('translate', (event, arg) => {
-    translator.translate(event, arg)
+    // translator.translateChinese(event, arg)
   })
 
   ipcMain.on('getText', (event, arg) => {
-    event.sender.send('textReceived', clipboard.readText())
+    const text = clipboard.readText()
+    event.sender.send('textReceived', text)
+    translator.translateChinese(event, text)
+    translator.translatePhraseOneMeaning(event, text)
+    translator.translatePhraseMultiMeaning(event, text)
   })
 }
 

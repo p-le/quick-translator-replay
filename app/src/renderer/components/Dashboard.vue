@@ -18,6 +18,7 @@
             <v-tabs-item id="cv">
               <v-card>
                 <v-card-text>
+                  {{ han }}
                 </v-card-text>
               </v-card>
             </v-tabs-item>
@@ -27,10 +28,16 @@
       <v-col xs7="xs7">
         <v-tabs grow>
           <v-tabs-tabs>
-            <v-tab-item v-for="i in 3" v-bind:item="{ text: 'Item ' + i, href: '#mobile-tabs-2-' + i }" ripple></v-tab-item>
+            <v-tab-item :item="{ text: 'Dịch 1 nghĩa', href: '#one-meaning' }" ripple></v-tab-item>
+            <v-tab-item :item="{ text: 'Dịch nhiều nghĩa', href: '#multi-meaning' }" ripple></v-tab-item>
           </v-tabs-tabs>
           <v-tabs-items>
-            <v-tabs-item v-for="i in 3" v-bind:id="'mobile-tabs-2-' + i">
+            <v-tabs-item id="one-meaning">
+              <v-card>
+                <v-card-text>...</v-card-text>
+              </v-card>
+            </v-tabs-item>
+            <v-tabs-item id="multi-meaning">
               <v-card>
                 <v-card-text>...</v-card-text>
               </v-card>
@@ -55,9 +62,15 @@
     computed: {
       text () {
         return this.$store.getters.text
+      },
+      han () {
+        return this.$store.getters.han
       }
     },
     created () {
+      ipcRenderer.on('han', (event, arg) => {
+        this.$store.commit('TRANSLATE_HAN', arg)
+      })
       ipcRenderer.on('textReceived', (event, arg) => {
         this.$store.commit('RECEIVE_TEXT', {
           text: arg

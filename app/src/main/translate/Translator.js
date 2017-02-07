@@ -14,7 +14,7 @@ export class Translator {
     })
   }
 
-  translate (event, text) {
+  translatePhraseMultiMeaning (event, text) {
     const chars = [...text]
     chars.forEach((word, index) => {
       if (this.isChinese(word)) {
@@ -23,6 +23,28 @@ export class Translator {
     })
   }
 
+  translatePhraseOneMeaning (event, text) {
+    const chars = [...text]
+    chars.forEach((word, index) => {
+      if (this.isChinese(word)) {
+
+      }
+    })
+  }
+
+  translateChinese (event, text) {
+    const chars = [...text]
+    const translatedChars = []
+
+    chars.forEach((word) => {
+      translatedChars.push(this.hanvietDict.get(word))
+    })
+    translatedChars[0].charAt(0).toUpperCase()
+
+    event.sender.send('han', {
+      han: translatedChars.join(' ')
+    })
+  }
   isChinese (word) {
     return this.hanvietDict.has(word)
   }
