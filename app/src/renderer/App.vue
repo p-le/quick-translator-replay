@@ -1,7 +1,15 @@
 <template>
   <div id="#app" :style="{'min-height': '100%'}">
     <router-view></router-view>
-      <v-btn floating large info id="take-clipboard"  @click.native="getText($event)" ripple>
+      <v-btn
+        v-tooltip:left="{ html: 'Copy Text from Clipboard' }"
+        floating
+        large
+        info
+        id="take-clipboard"
+        @click.native="getText($event)"
+        ripple
+      >
         <v-icon>library_books</v-icon>
       </v-btn>
   </div>

@@ -1,7 +1,7 @@
 {
   "name": "quick-translator-replay",
   "version": "0.0.0",
-  "description": "An electron-vue project",
+  "description": "Quick translator replay with electron-vue",
   "scripts": {
     "build": "npm run pack && build",
     "build:dir": "npm run pack && build --dir",
@@ -40,7 +40,8 @@
     "files": [
       "dist/",
       "node_modules/",
-      "package.json"
+      "package.json",
+      "dicts/"
     ],
     "mac": {
       "icon": "app/icons/icon.icns"

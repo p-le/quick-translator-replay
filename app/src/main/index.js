@@ -1,6 +1,7 @@
 'use strict'
 
 import { app, BrowserWindow, ipcMain, clipboard } from 'electron'
+import { Translator } from './translate/Translator'
 
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development'
@@ -8,6 +9,8 @@ const winURL = process.env.NODE_ENV === 'development'
   : `file://${__dirname}/index.html`
 
 function createWindow () {
+  let translator = new Translator()
+
   mainWindow = new BrowserWindow({
     height: 720,
     width: 1280
@@ -20,11 +23,10 @@ function createWindow () {
   })
 
   ipcMain.on('translate', (event, arg) => {
-    console.log(arg)
+    translator.translate(event, arg)
   })
 
   ipcMain.on('getText', (event, arg) => {
-    console.log(clipboard.readText())
     event.sender.send('textReceived', clipboard.readText())
   })
 }
