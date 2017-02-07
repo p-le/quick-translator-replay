@@ -21,7 +21,7 @@ let rendererConfig = {
       {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract({
-          fallbackLoader: 'style-loader',
+          fallback: 'style-loader',
           loader: 'css-loader'
         })
       },

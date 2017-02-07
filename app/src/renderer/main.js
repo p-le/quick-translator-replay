@@ -6,6 +6,7 @@ import Router from 'vue-router'
 
 import App from './App'
 import routes from './routes'
+import store from './vuex/store'
 
 Vue.use(Electron)
 Vue.use(Resource)
@@ -21,5 +22,6 @@ const router = new Router({
 /* eslint-disable no-new */
 new Vue({
   router,
+  store,
   ...App
 }).$mount('#app')

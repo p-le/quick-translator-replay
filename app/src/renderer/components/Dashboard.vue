@@ -1,18 +1,11 @@
 <template>
   <v-container>
-    <v-row id="text-import">
-      <div >
-        <textarea rows="5" cols="100" @keyup.enter="translate">
-        At w3schools.com you will learn how to make a website. We offer free tutorials in all web development technologies. 
-        </textarea>
-      </div>
-    </v-row>
     <v-row>
       <v-col xs4="xs4">
-        3
+        <v-btn @click.native="getText($event)" ripple info>Get Text</v-btn>
       </v-col>
       <v-col xs8="xs8">
-        9
+        {{ text }}
       </v-col>
     </v-row>
   </v-container>
@@ -23,9 +16,24 @@
 
   export default {
     name: 'dashboard',
+    computed: {
+      text () {
+        return this.$store.getters.text
+      }
+    },
+    created () {
+      ipcRenderer.on('textReceived', (event, arg) => {
+        this.$store.commit('RECEIVE_TEXT', {
+          text: arg
+        })
+      })
+    },
     methods: {
-      translate () {
-        ipcRenderer.send('translate', 'abc')
+      translate (event) {
+        ipcRenderer.send('translate', event.target.value)
+      },
+      getText (event) {
+        ipcRenderer.send('getText')
       }
     }
   }
@@ -34,10 +42,5 @@
 <style scoped>
 v-container {
   margin-top: 1rem;
-}
-#text-import {
-  display: flex;
-  align-content: center;
-  justify-content: center;
 }
 </style>

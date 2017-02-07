@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, clipboard } from 'electron'
 import * as fs from 'fs'
 
 let mainWindow
@@ -20,15 +20,19 @@ function createWindow () {
     mainWindow = null
   })
 
-  ipcMain.on('translate', (event, args) => {
-    console.log(args)
+  ipcMain.on('translate', (event, arg) => {
+    console.log(arg)
   })
-  console.log('mainWindow opened')
 
-  fs.readFile(`${__dirname}/dictionary/Shortcuts.txt`, 'utf8', (err, contents) => {
-    if (err) console.log(err)
-    else console.log(contents)
+  ipcMain.on('getText', (event, arg) => {
+    console.log(clipboard.readText())
+    event.sender.send('textReceived', clipboard.readText())
   })
+
+  // fs.readFile(`${__dirname}/dictionary/Shortcuts.txt`, 'utf8', (err, contents) => {
+  //   if (err) console.log(err)
+  //   else console.log(contents)
+  // })
 }
 
 app.on('ready', createWindow)
