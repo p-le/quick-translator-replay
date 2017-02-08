@@ -1,31 +1,7 @@
 import * as fs from 'fs'
 
 export class Loader {
-  loadChardict () {
-    return new Promise((resolve, reject) => {
-      fs.readFile('models/zh_chardic.json', (err, chardict) => {
-        if (err) {
-          console.log(err)
-          reject(err)
-        } else {
-          resolve(chardict)
-        }
-      })
-    })
-  }
 
-  loadModel () {
-    return new Promise((resolve, reject) => {
-      fs.readFile('models/model_zh.json', (err, model) => {
-        if (err) {
-          console.log(err)
-          reject(err)
-        } else {
-          resolve(model)
-        }
-      })
-    })
-  }
   loadHanVietDict () {
     console.log('load dict')
 

@@ -1,21 +1,21 @@
 import * as types from './mutation-types'
 
-export const decrementMain = ({ commit }) => {
-  commit(types.DECREMENT_MAIN_COUNTER)
+export const getText = ({ commit }, payload) => {
+  commit(types.GET_TEXT, payload)
 }
 
-export const incrementMain = ({ commit }) => {
-  commit(types.INCREMENT_MAIN_COUNTER)
+export const translatingZhVn = ({ commit }) => {
+  commit(types.TRANSLATING_ZHVN)
 }
 
-export const receiveText = ({ commit }, payload) => {
-  commit(types.RECEIVE_TEXT, payload)
+export const translatingModel = ({ commit }) => {
+  commit(types.TRANSLATING_MODEL)
 }
 
-export const translateHan = ({ commit }, payload) => {
-  commit(types.TRANSLATE_HAN, payload)
+export const translateZhVnDone = ({ commit }, payload) => {
+  commit(types.TRANSLATE_ZHVN_DONE, payload)
 }
 
-export const translateOnemeaning = ({ commit }, payload) => {
-  commit(types.TRANSLATE_ONEMEANING, payload)
+export const translateModelDone = ({ commit }, payload) => {
+  commit(types.TRANSLATE_MODEL_DONE, payload)
 }

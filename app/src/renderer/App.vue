@@ -1,7 +1,7 @@
 <template>
   <div id="#app" :style="{'min-height': '100%'}">
     <v-navbar>
-      <v-navbar-logo></v-navbar-logo>
+      <v-navbar-logo>Quick Translator</v-navbar-logo>
       <v-navbar-items>
         <v-navbar-item v-bind:item="{ href: '#!', icon: 'remove' }" @click.native="minimize"></v-navbar-item>
         <v-navbar-item v-bind:item="{ href: '#!', icon: isFullscreen ? 'fullscreen_exit' : 'fullscreen' }" @click.native="fullscreen"></v-navbar-item>
@@ -39,7 +39,13 @@
     },
     methods: {
       getText (event) {
-        ipcRenderer.send('getText')
+        const clipboard = remote.clipboard
+        let text = clipboard.readText()
+        text = text.split(/\r?\n/).filter(line => line !== '').map(line => line.trimLeft()).join('\r\n')
+        ipcRenderer.send('translate', text)
+        this.$store.commit('GET_TEXT', {
+          text
+        })
       },
       fullscreen () {
         this.isFullscreen = !this.isFullscreen
@@ -65,7 +71,7 @@
     right: 2rem;
   }
   .navbar__logo {
-    font-size: 2.3rem;
+    font-size: 1.6rem;
   }
   .navbar {
     height: 2.4rem;

@@ -98,7 +98,7 @@
     "karma-spec-reporter": "0.0.26",
     "karma-webpack": "^2.0.1",
     "mocha": "^3.0.2",
-    "rakutenma": "^1.0.0",
+    "node-analyzer": "^5.0.1",
     "require-dir": "^0.3.0",
     "spectron": "^3.4.0",
     "style-loader": "^0.13.1",

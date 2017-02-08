@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, BrowserWindow, ipcMain, clipboard } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { Translator } from './translate/Translator'
 
 let mainWindow
@@ -22,17 +22,21 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-  ipcMain.on('translate', (event, arg) => {
-    // translator.translateChinese(event, arg)
-  })
-  ipcMain.on('getText', (event, arg) => {
-    let text = clipboard.readText()
-    text = text.split(/\r?\n/).filter(line => line !== '').map(line => line.trimLeft()).join('\r\n')
-    event.sender.send('textReceived', text)
-    translator.translateChinese(event, text)
-    translator.translateByModel(event, text)
-    // translator.translatePhraseOneMeaning(event, text)
-    // translator.translatePhraseMultiMeaning(event, text)
+
+  ipcMain.on('translate', (event, text) => {
+    translator.translateChinese(event, text).then(translatedLines => {
+      event.sender.send('translate/by/ZhVn', {
+        result: translatedLines.join('\r\n'),
+        status: false
+      })
+    })
+
+    translator.translateByModel(event, text).then(translatedTokens => {
+      event.sender.send('translate/by/model', {
+        result: translatedTokens.join(' '),
+        status: false
+      })
+    })
   })
 }
 

@@ -2,20 +2,29 @@ import * as types from '../mutation-types'
 
 const state = {
   text: '',
-  onemeaning: '',
-  han: ''
+  isTranslatingZhVn: false,
+  isTranslatingModel: false,
+  resultZhVn: '',
+  resultModel: ''
 }
 
 const mutations = {
-  [types.RECEIVE_TEXT] (state, payload) {
+  [types.GET_TEXT] (state, payload) {
     state.text = payload.text
   },
-  [types.TRANSLATE_HAN] (state, payload) {
-    state.han = payload.han
+  [types.TRANSLATING_MODEL] (state, payload) {
+    state.isTranslatingModel = true
   },
-  [types.TRANSLATE_ONEMEANING] (state, payload) {
-    console.log(String.raw`${payload.onemeaning}`)
-    state.onemeaning = payload.onemeaning
+  [types.TRANSLATE_MODEL_DONE] (state, payload) {
+    state.isTranslatingModel = false
+    state.resultModel = payload.result
+  },
+  [types.TRANSLATING_ZHVN] (state, payload) {
+    state.isTranslatingZhVn = true
+  },
+  [types.TRANSLATE_ZHVN_DONE] (state, payload) {
+    state.isTranslatingZhVn = false
+    state.resultZhVn = payload.result
   }
 }
 

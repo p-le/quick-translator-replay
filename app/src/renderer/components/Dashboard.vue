@@ -18,7 +18,7 @@
             <v-tabs-item id="cv">
               <v-card>
                 <v-card-text>
-                  <pre>{{ han }}</pre>
+                  <pre>{{ resultZhVn }}</pre>
                 </v-card-text>
               </v-card>
             </v-tabs-item>
@@ -34,10 +34,11 @@
           <v-tabs-items>
             <v-tabs-item id="one-meaning">
               <v-card>
-                <v-card-text>
-                  <pre>
-                    {{ onemeaning }}
-                  </pre>
+                <v-card-text v-if="isTranslatingModel" id="loading">
+                  <v-progress-circular indeterminate v-bind:size="50" class="primary--text"></v-progress-circular>
+                </v-card-text>
+                <v-card-text v-else>
+                  <pre>{{ resultModel }}</pre>
                 </v-card-text>
               </v-card>
             </v-tabs-item>
@@ -67,27 +68,42 @@
       text () {
         return this.$store.getters.text
       },
-      han () {
-        return this.$store.getters.han
+      resultZhVn () {
+        return this.$store.getters.resultZhVn
       },
-      onemeaning () {
-        return this.$store.getters.onemeaning
+      resultModel () {
+        return this.$store.getters.resultModel
+      },
+      isTranslatingZhVn () {
+        return this.$store.getters.isTranslatingZhVn
+      },
+      isTranslatingModel () {
+        return this.$store.getters.isTranslatingModel
       }
     },
     created () {
       ipcRenderer.on('model', (event, arg) => {
         this.$store.commit('TRANSLATE_ONEMEANING', arg)
       })
-      ipcRenderer.on('onemeaning', (event, arg) => {
-        this.$store.commit('TRANSLATE_ONEMEANING', arg)
+      ipcRenderer.on('translate/by/ZhVn', (event, args) => {
+        switch (args.status) {
+          case true:
+            this.$store.commit('TRANSLATING_ZHVN')
+            break
+          case false:
+            this.$store.commit('TRANSLATE_ZHVN_DONE', { result: args.result })
+            break
+        }
       })
-      ipcRenderer.on('han', (event, arg) => {
-        this.$store.commit('TRANSLATE_HAN', arg)
-      })
-      ipcRenderer.on('textReceived', (event, arg) => {
-        this.$store.commit('RECEIVE_TEXT', {
-          text: arg
-        })
+      ipcRenderer.on('translate/by/model', (event, args) => {
+        switch (args.status) {
+          case true:
+            this.$store.commit('TRANSLATING_MODEL')
+            break
+          case false:
+            this.$store.commit('TRANSLATE_MODEL_DONE', { result: args.result })
+            break
+        }
       })
     },
     methods: {
@@ -125,5 +141,10 @@ v-container {
 ::-webkit-scrollbar-thumb {
     border-radius: 10px;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+#loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
