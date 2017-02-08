@@ -53,6 +53,17 @@
       "target": [
         "AppImage"
       ]
+    },
+    "extraResources": [
+      {
+        "from": "dicts",
+        "to": "dicts",
+        "filter": [ "**/*" ]
+      }
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     }
   },
   "author": "Greg Holguin <simulatedgreg@gmail.com>",
