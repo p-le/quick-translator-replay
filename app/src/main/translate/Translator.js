@@ -1,16 +1,90 @@
 import { Loader } from './Loader'
+const RakutenMA = require('rakutenma')
 
 export class Translator {
   constructor () {
     const loader = new Loader()
-    this.hanvietDict = new Map()
+
+    loader.loadModel().then(model => {
+      this.rma = new RakutenMA(JSON.parse(model))
+      this.rma.featset = RakutenMA.default_featset_zh
+      this.rma.hash_func = RakutenMA.create_hash_func(15)
+      loader.loadChardict().then(chardict => {
+        this.rma.ctype_func = RakutenMA.create_ctype_chardic_func(JSON.parse(chardict))
+      })
+    })
+
     loader.loadHanVietDict().then(dict => {
       this.hanvietDict = dict
-      return dict
     })
+
     loader.loadPhraseDict().then(dict => {
       this.phraseDict = dict
-      return dict
+    })
+
+    loader.loadNameDict().then(dict => {
+      this.nameDict = dict
+    })
+  }
+
+  translateByModel (event, text) {
+    const translatedTokens = []
+    const tokenPairs = this.rma.tokenize(text)
+    console.log(tokenPairs)
+    const maxLength = tokenPairs.length
+
+    for (let i = 0; i < maxLength; i++) {
+      let isBiggerTokenExist = false
+
+      // for (let j = tokenPairs.length; j > i; j--) {
+      //   const biggerToken = tokenPairs.slice(i, j).map(tokenPair => tokenPair[0]).join('')
+      //   if (this.nameDict.has(biggerToken)) {
+      //     translatedTokens.push(this.nameDict.get(biggerToken))
+      //     console.log(biggerToken, 'bigger name')
+      //     isBiggerTokenExist = true
+      //   } else if (this.phraseDict.has(biggerToken)) {
+      //     translatedTokens.push(this.phraseDict.get(biggerToken))
+      //     console.log(biggerToken, 'bigger phrase')
+      //     isBiggerTokenExist = true
+      //   }
+
+      //   if (isBiggerTokenExist) {
+      //     i += j
+      //     break
+      //   }
+      // }
+
+      if (isBiggerTokenExist) continue
+
+      const [token, type] = tokenPairs[i]
+      console.log(token, type)
+      const words = [...token]
+      if (type === '') {
+        words.map(word => {
+          if (this.hanvietDict.has(word)) {
+            translatedTokens.push(this.captilize(this.hanvietDict.get(word)))
+          }
+        })
+      } else {
+        if (this.phraseDict.has(token)) {
+          translatedTokens.push(this.phraseDict.get(token))
+          console.log(token, 'phrase')
+        } else if (this.nameDict.has(token)) {
+          translatedTokens.push(this.nameDict.get(token))
+          console.log(token, 'name')
+        } else {
+          console.log(token, 'han')
+          words.map(word => {
+            if (this.hanvietDict.has(word)) {
+              translatedTokens.push(this.captilize(this.hanvietDict.get(word)))
+            }
+          })
+        }
+      }
+    }
+
+    event.sender.send('model', {
+      onemeaning: translatedTokens.join(' ')
     })
   }
 
@@ -98,5 +172,9 @@ export class Translator {
 
   isPhrase (phrase) {
     return this.phraseDict.has(phrase)
+  }
+
+  captilize (word) {
+    return word.charAt(0).toUpperCase() + word.slice(1)
   }
 }

@@ -75,6 +75,9 @@
       }
     },
     created () {
+      ipcRenderer.on('model', (event, arg) => {
+        this.$store.commit('TRANSLATE_ONEMEANING', arg)
+      })
       ipcRenderer.on('onemeaning', (event, arg) => {
         this.$store.commit('TRANSLATE_ONEMEANING', arg)
       })
@@ -85,11 +88,6 @@
         this.$store.commit('RECEIVE_TEXT', {
           text: arg
         })
-      })
-      ipcRenderer.send('loadDict')
-      ipcRenderer.on('hanviet', (event, arg) => {
-        const dict = new Map(JSON.parse(arg))
-        console.log(dict.size)
       })
     },
     methods: {
@@ -109,7 +107,7 @@ v-container {
   margin-top: 1rem;
 }
 .tabs__tabs {
-  height: 50px !important;
+  height: 40px;
 }
 .tabs__item {
   height: 400px;

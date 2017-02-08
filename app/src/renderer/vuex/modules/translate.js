@@ -14,6 +14,7 @@ const mutations = {
     state.han = payload.han
   },
   [types.TRANSLATE_ONEMEANING] (state, payload) {
+    console.log(String.raw`${payload.onemeaning}`)
     state.onemeaning = payload.onemeaning
   }
 }

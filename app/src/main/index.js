@@ -22,23 +22,17 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-
   ipcMain.on('translate', (event, arg) => {
     // translator.translateChinese(event, arg)
-  })
-  ipcMain.on('fullscreen', (event, arg) => {
-    mainWindow.setFullScreen(!mainWindow.isFullScreen())
-  })
-  ipcMain.on('exit', (event, arg) => {
-    app.quit()
   })
   ipcMain.on('getText', (event, arg) => {
     let text = clipboard.readText()
     text = text.split(/\r?\n/).filter(line => line !== '').map(line => line.trimLeft()).join('\r\n')
     event.sender.send('textReceived', text)
     translator.translateChinese(event, text)
-    translator.translatePhraseOneMeaning(event, text)
-    translator.translatePhraseMultiMeaning(event, text)
+    translator.translateByModel(event, text)
+    // translator.translatePhraseOneMeaning(event, text)
+    // translator.translatePhraseMultiMeaning(event, text)
   })
 }
 
