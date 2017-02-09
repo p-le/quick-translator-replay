@@ -5,10 +5,6 @@ export default [
     component: require('components/TranslateWindow')
   },
   {
-    path: '*',
-    redirect: '/'
-  },
-  {
     path: '/search',
     name: 'search-window',
     component: require('components/SearchWindow')

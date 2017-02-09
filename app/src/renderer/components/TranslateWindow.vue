@@ -113,8 +113,10 @@
     methods: {
       select () {
         const selected = window.getSelection().toString()
+        console.log(selected)
         if (selected.length > 0) {
           ipcRenderer.send('search/dict', selected)
+          window.getSelection().removeAllRanges()
           // menu.popup(remote.getCurrentWindow())
         }
       }

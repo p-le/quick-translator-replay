@@ -56,7 +56,7 @@ function createWindow () {
       width: 320,
       height: 640
     })
-    searchDict.loadURL(`${winURL}/search`)
+    searchDict.loadURL(`${winURL}/#/search`)
     searchDict.once('ready-to-show', () => {
       searchDict.show()
     })
