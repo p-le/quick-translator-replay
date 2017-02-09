@@ -25,28 +25,29 @@ export class Translator {
         status: true
       })
       setTimeout(() => {
-        const tokens = this.segmenter.analyze(text).split(' ')
-        console.log(tokens)
-        const translatedTokens = []
-        tokens.map(token => {
-          const words = [...token]
-          if (this.phraseDict.has(token)) {
-            translatedTokens.push(this.phraseDict.get(token))
-            console.log(token, 'phrase')
-          } else if (this.nameDict.has(token)) {
-            translatedTokens.push(this.nameDict.get(token))
-            console.log(token, 'name')
-          } else {
-            console.log(token, 'han')
-            words.map(word => {
-              if (this.hanvietDict.has(word)) {
-                translatedTokens.push(this.captilize(this.hanvietDict.get(word)))
-              }
-            })
-          }
+        const lines = text.split(/\r?\n/)
+        const translatedLines = []
+        lines.map(line => {
+          const tokens = this.segmenter.analyze(line).split(' ')
+          const translatedTokens = []
+          tokens.map(token => {
+            const words = [...token]
+            if (this.phraseDict.has(token)) {
+              translatedTokens.push(this.phraseDict.get(token))
+            } else if (this.nameDict.has(token)) {
+              translatedTokens.push(this.nameDict.get(token))
+            } else {
+              words.map(word => {
+                if (this.hanvietDict.has(word)) {
+                  translatedTokens.push(this.captilize(this.hanvietDict.get(word)))
+                }
+              })
+            }
+          })
+          translatedLines.push(translatedTokens.join(' '))
         })
-        resolve(translatedTokens)
-      }, 5000)
+        resolve(translatedLines)
+      }, 2000)
     })
   }
 

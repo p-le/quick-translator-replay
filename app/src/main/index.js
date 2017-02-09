@@ -2,6 +2,7 @@
 
 import { app, BrowserWindow, ipcMain, globalShortcut, clipboard } from 'electron'
 import { Translator } from './translate/Translator'
+const electronLocalshortcut = require('electron-localshortcut')
 
 let mainWindow
 
@@ -24,7 +25,7 @@ function createWindow () {
     mainWindow = null
   })
 
-  globalShortcut.register('CommandOrControl+V', () => {
+  electronLocalshortcut.register('CommandOrControl+V', () => {
     let text = clipboard.readText()
     text = text.split(/\r?\n/).filter(line => line !== '').map(line => line.trimLeft()).join('\r\n')
     mainWindow.webContents.send('GET_TEXT', text)
@@ -38,14 +39,27 @@ function createWindow () {
       })
     }).catch(err => console.log(err))
 
-    translator.translateByModel(event, text).then(translatedTokens => {
-      const result = translatedTokens.join(' ')
-      clipboard.writeText(result)
+    translator.translateByModel(event, text).then(translatedLines => {
+      const result = translatedLines.join('\r\n')
       event.sender.send('translate/by/model', {
         result,
         status: false
       })
     }).catch(err => console.log(err))
+  })
+
+  ipcMain.on('search/dict', (event, arg) => {
+    const searchDict = new BrowserWindow({
+      parent: mainWindow,
+      show: false,
+      frame: false,
+      width: 320,
+      height: 640
+    })
+    searchDict.loadURL(`${winURL}/search`)
+    searchDict.once('ready-to-show', () => {
+      searchDict.show()
+    })
   })
 }
 

@@ -51,6 +51,10 @@
         </v-tabs>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col xs2="xs2">河伯</v-col>
+      <v-col xs10="xs10"></v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -63,7 +67,7 @@
   menu.append(new MenuItem({label: 'Add Name'}))
 
   export default {
-    name: 'dashboard',
+    name: 'trasnlate-window',
     computed: {
       text () {
         return this.$store.getters.text
@@ -110,7 +114,7 @@
       select () {
         const selected = window.getSelection().toString()
         if (selected.length > 0) {
-          ipcRenderer.send('translate', selected)
+          ipcRenderer.send('search/dict', selected)
           // menu.popup(remote.getCurrentWindow())
         }
       }
@@ -126,7 +130,7 @@ v-container {
   height: 40px;
 }
 .tabs__item {
-  height: 400px;
+  height: 500px;
   overflow: auto;
 }
 ::-webkit-scrollbar {

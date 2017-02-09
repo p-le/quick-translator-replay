@@ -8,7 +8,10 @@
         <v-navbar-item v-bind:item="{ href: '#!', icon: 'clear' }" @click.native="exit"></v-navbar-item>
       </v-navbar-items>
     </v-navbar>
-    
+    You are currently at <code>`\{{ $route.path }}`</code> on the <code>`\{{ $route.name }}`</code> view.
+     <router-link to="/search">Go to Bar</router-link>
+      <router-link to="/">Go to Home</router-link>
+      <a herf="http://qiita.com/SatoTakumi/items/fd79672d7eb8a9b4a0bb">aaa</a>
     <router-view></router-view>
     <v-btn
       v-tooltip:left="{ html: 'Import from text file' }"
