@@ -1,6 +1,6 @@
 {
   "name": "quick-translator-replay",
-  "version": "v0.1.7-beta",
+  "version": "v0.2.9",
   "description": "Quick translator replay with electron-vue",
   "scripts": {
     "build": "npm run pack && build",
@@ -37,11 +37,14 @@
         }
       ]
     },
+    "directories": {
+      "output": "dist",
+      "app": "app"
+    },
     "files": [
       "dist/",
       "node_modules/",
-      "package.json",
-      "dicts/"
+      "package.json"
     ],
     "mac": {
       "icon": "app/icons/icon.icns"
@@ -54,11 +57,13 @@
         "AppImage"
       ]
     },
-    "extraResources": [
+    "extraFiles": [
       {
         "from": "dicts",
         "to": "dicts",
-        "filter": [ "**/*" ]
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "nsis": {
@@ -87,6 +92,7 @@
     "electron-builder": "^11.4.4",
     "electron-debug": "^1.1.0",
     "electron-devtools-installer": "^2.0.1",
+    "electron-log": "^1.3.0",
     "electron-rebuild": "^1.1.3",
     "eslint": "^3.13.1",
     "eslint-config-standard": "^6.2.1",
