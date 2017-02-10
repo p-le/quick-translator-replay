@@ -1,9 +1,4 @@
 import { Loader } from './Loader'
-var path = require('path')
-module.paths.push(path.resolve('node_modules'))
-module.paths.push(path.resolve('../node_modules'))
-module.paths.push(path.resolve(__dirname, '..', '..', '..', '..', 'resources', 'app', 'node_modules'))
-module.paths.push(path.resolve(__dirname, '..', '..', '..', '..', 'resources', 'app.asar', 'node_modules'))
 const Segmenter = require('node-analyzer')
 
 export class Translator {

@@ -1,5 +1,5 @@
 <template>
-  <div id="#app" :style="{'min-height': '100%'}">
+  <div id="#app">
     <v-navbar>
       <v-navbar-logo>Quick Translator</v-navbar-logo>
       <v-navbar-items>
@@ -10,6 +10,16 @@
     </v-navbar>
     
     <router-view></router-view>
+    <v-btn
+      v-tooltip:left="{ html: 'Import from text file' }"
+      floating
+      info
+      id="import"
+      @click.native="importText($event)"
+      ripple
+    >
+      <v-icon>note_add</v-icon>
+    </v-btn>
     <v-btn
       v-tooltip:left="{ html: 'Copy Text from Clipboard' }"
       floating
@@ -34,10 +44,30 @@
         isFullscreen: false
       }
     },
+    created () {
+      ipcRenderer.on('GET_TEXT', (event, text) => {
+        text = text.split(/\r?\n/).filter(line => line !== '').map(line => line.trimLeft()).join('\r\n')
+        ipcRenderer.send('translate', text)
+        this.$store.commit('GET_TEXT', {
+          text
+        })
+      })
+    },
     mounted () {
       this.$vuetify.init()
     },
     methods: {
+      importText (event) {
+        remote.dialog.showOpenDialog({properties: [
+          'openFile',
+          'openDirectory',
+          'multiSelections'
+        ]}, (filenames) => {
+          if (filenames !== undefined) {
+            console.log(filenames)
+          }
+        })
+      },
       getText (event) {
         const clipboard = remote.clipboard
         let text = clipboard.readText()
@@ -65,10 +95,23 @@
   @import '../../../node_modules/vuetify/src/stylus/main';
   @import './css/main.css';
 
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  #import {
+    position: fixed;
+    bottom: 5.2rem;
+    right:  1.9rem;
+  }
   #take-clipboard {
     position: fixed;
-    bottom: 2rem;
-    right: 2rem;
+    bottom: 1rem;
+    right: 1rem;
   }
   .navbar__logo {
     font-size: 1.6rem;
@@ -80,4 +123,9 @@
   .navbar__items li {
     -webkit-app-region: no-drag;
   }
+  #app {
+    min-height: 100%;
+    animation: fadein 0.5s;
+  }
+
 </style>

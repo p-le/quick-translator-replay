@@ -1,28 +1,15 @@
 'use strict'
 
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, globalShortcut, clipboard } from 'electron'
 import { Translator } from './translate/Translator'
-const log = require('electron-log')
-const fs = require('fs')
 
 let mainWindow
+
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:${require('../../../config').port}`
   : `file://${__dirname}/index.html`
 
 function createWindow () {
-  let translator = new Translator()
-  log.transports.console.level = 'warn'
-  log.transports.console.format = '{h}:{i}:{s}:{ms} {text}'
-  log.transports.console.format = (msg) => msg.text
-  log.transports.file.level = 'warn'
-  log.transports.file.format = '{h}:{i}:{s} {text}'
-  log.transports.file.maxSize = 5 * 1024 * 1024
-  log.transports.file.file = `${__dirname}/log.txt`
-  log.transports.file.streamConfig = { flags: 'w' }
-  log.transports.file.stream = fs.createWriteStream('log.txt')
-  log.appName = 'qt'
-
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 720,
@@ -31,8 +18,16 @@ function createWindow () {
 
   mainWindow.loadURL(winURL)
 
+  let translator = new Translator()
+
   mainWindow.on('closed', () => {
     mainWindow = null
+  })
+
+  globalShortcut.register('CommandOrControl+V', () => {
+    let text = clipboard.readText()
+    text = text.split(/\r?\n/).filter(line => line !== '').map(line => line.trimLeft()).join('\r\n')
+    mainWindow.webContents.send('GET_TEXT', text)
   })
 
   ipcMain.on('translate', (event, text) => {
@@ -41,14 +36,16 @@ function createWindow () {
         result: translatedLines.join('\r\n'),
         status: false
       })
-    }).catch(err => log.error(err))
+    }).catch(err => console.log(err))
 
     translator.translateByModel(event, text).then(translatedTokens => {
+      const result = translatedTokens.join(' ')
+      clipboard.writeText(result)
       event.sender.send('translate/by/model', {
-        result: translatedTokens.join(' '),
+        result,
         status: false
       })
-    }).catch(err => log.error(err))
+    }).catch(err => console.log(err))
   })
 }
 
@@ -64,4 +61,8 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow()
   }
+})
+
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll()
 })
