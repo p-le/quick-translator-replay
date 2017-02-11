@@ -24,30 +24,40 @@ export class Translator {
       event.sender.send('translate/by/model', {
         status: true
       })
-      setTimeout(() => {
-        const lines = text.split(/\r?\n/)
-        const translatedLines = []
-        lines.map(line => {
-          const tokens = this.segmenter.analyze(line).split(' ')
-          const translatedTokens = []
-          tokens.map(token => {
+      const lines = text.split(/\r?\n/)
+      let translatedLines = lines
+      const translatedMap = new Map()
+
+      translatedLines = translatedLines.map(translatedLine => {
+        const tokens = this.segmenter.analyze(translatedLine).split(' ')
+        tokens.map(token => {
+          if (this.phraseDict.has(token)) {
+            const translatedToken = this.phraseDict.get(token)
+            translatedMap.set(token, translatedToken)
+            translatedLine = translatedLine.replace(token, ' ' + translatedToken)
+          } else if (this.nameDict.has(token)) {
+            const translatedToken = this.nameDict.get(token)
+            translatedMap.set(token, translatedToken)
+            translatedLine = translatedLine.replace(token, ' ' + translatedToken)
+          } else {
             const words = [...token]
-            if (this.phraseDict.has(token)) {
-              translatedTokens.push(this.phraseDict.get(token))
-            } else if (this.nameDict.has(token)) {
-              translatedTokens.push(this.nameDict.get(token))
-            } else {
-              words.map(word => {
-                if (this.hanvietDict.has(word)) {
-                  translatedTokens.push(this.captilize(this.hanvietDict.get(word)))
-                }
-              })
-            }
-          })
-          translatedLines.push(translatedTokens.join(' '))
+            words.map(word => {
+              let translatedWord = '???'
+              if (this.hanvietDict.has(word)) {
+                translatedWord = this.hanvietDict.get(word)
+              }
+              translatedMap.set(word, translatedWord)
+              translatedLine = translatedLine.replace(word, ' ' + translatedWord)
+            })
+          }
         })
-        resolve(translatedLines)
-      }, 2000)
+        return translatedLine
+      })
+
+      resolve({
+        lines: translatedLines,
+        map: translatedMap
+      })
     })
   }
 

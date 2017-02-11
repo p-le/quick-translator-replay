@@ -11,7 +11,7 @@
             <v-tabs-item id="c">
               <v-card>
                 <v-card-text @mouseup="select">
-                  <pre>{{ text }}</pre>
+                  <pre v-html="text"></pre>
                 </v-card-text>
               </v-card>
             </v-tabs-item>
@@ -38,7 +38,7 @@
                   <v-progress-circular indeterminate v-bind:size="50" class="primary--text"></v-progress-circular>
                 </v-card-text>
                 <v-card-text v-else>
-                  <pre>{{ resultModel }}</pre>
+                  <pre v-html="resultByModel"></pre>
                 </v-card-text>
               </v-card>
             </v-tabs-item>
@@ -75,8 +75,9 @@
       resultZhVn () {
         return this.$store.getters.resultZhVn
       },
-      resultModel () {
-        return this.$store.getters.resultModel
+      resultByModel () {
+        console.log(this.$store.getters.resultMapByModel)
+        return this.$store.getters.resultByModel
       },
       isTranslatingZhVn () {
         return this.$store.getters.isTranslatingZhVn
@@ -105,7 +106,8 @@
             this.$store.commit('TRANSLATING_MODEL')
             break
           case false:
-            this.$store.commit('TRANSLATE_MODEL_DONE', { result: args.result })
+            console.log(JSON.parse(args.result))
+            this.$store.commit('TRANSLATE_MODEL_DONE', { result: JSON.parse(args.result) })
             break
         }
       })
@@ -128,13 +130,16 @@
 v-container {
   margin-top: 1rem;
 }
+
 .tabs__tabs {
   height: 40px;
 }
+
 .tabs__item {
   height: 500px;
   overflow: auto;
 }
+
 .row .col {
   padding: 0 !important;
 }
@@ -151,6 +156,7 @@ v-container {
     border-radius: 10px;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
 }
+
 #loading {
   display: flex;
   align-items: center;

@@ -5,7 +5,8 @@ const state = {
   isTranslatingZhVn: false,
   isTranslatingModel: false,
   resultZhVn: '',
-  resultModel: ''
+  resultByModel: '',
+  resultMapByModel: new Map()
 }
 
 const mutations = {
@@ -16,8 +17,16 @@ const mutations = {
     state.isTranslatingModel = true
   },
   [types.TRANSLATE_MODEL_DONE] (state, payload) {
+    const resultMap = new Map(payload.result.map)
+    let result = payload.result.lines.join('\r\n')
+    /* eslint-disable no-unused-vars */
+    for (let [token, translatedToken] of resultMap.entries()) {
+      result = result.replace(translatedToken, `<span class="tw">${translatedToken}</span>`)
+    }
+
+    state.resultByModel = result
+    state.resultMapByModel = resultMap
     state.isTranslatingModel = false
-    state.resultModel = payload.result
   },
   [types.TRANSLATING_ZHVN] (state, payload) {
     state.isTranslatingZhVn = true

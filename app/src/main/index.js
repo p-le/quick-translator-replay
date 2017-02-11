@@ -45,10 +45,10 @@ function createWindow () {
       })
     }).catch(err => console.log(err))
 
-    translator.translateByModel(event, text).then(translatedLines => {
-      const result = translatedLines.join('\r\n')
+    translator.translateByModel(event, text).then(result => {
+      console.log(result)
       event.sender.send('translate/by/model', {
-        result,
+        result: JSON.stringify(result),
         status: false
       })
     }).catch(err => console.log(err))
