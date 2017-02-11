@@ -8,9 +8,6 @@
         <v-navbar-item v-bind:item="{ href: '#!', icon: 'clear' }" @click.native="exit"></v-navbar-item>
       </v-navbar-items>
     </v-navbar>
-    You are currently at <code>`\{{ $route.fullPath }}`</code> on the <code>`\{{ $route.name }}`</code> view.
-    <router-link to="/search">Go to Bar</router-link>
-    <router-link to="/">Go to Home</router-link>
     <router-view></router-view>
     <v-btn
       v-tooltip:left="{ html: 'Import from text file' }"

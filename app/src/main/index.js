@@ -16,7 +16,13 @@ function createWindow () {
     height: 720,
     frame: false
   })
-
+  const searchDictWindow = new BrowserWindow({
+    parent: mainWindow,
+    show: false,
+    frame: false,
+    width: 320,
+    height: 640
+  })
   mainWindow.loadURL(winURL)
 
   let translator = new Translator()
@@ -49,17 +55,15 @@ function createWindow () {
   })
 
   ipcMain.on('search/dict', (event, arg) => {
-    const searchDict = new BrowserWindow({
-      parent: mainWindow,
-      show: false,
-      frame: false,
-      width: 320,
-      height: 640
-    })
-    searchDict.loadURL(`${winURL}/#/search`)
-    searchDict.once('ready-to-show', () => {
-      searchDict.show()
-    })
+    if (!searchDictWindow.isVisible()) {
+      searchDictWindow.focus()
+      searchDictWindow.loadURL(`${winURL}/#/search`)
+      searchDictWindow.once('ready-to-show', () => {
+        searchDictWindow.show()
+      })
+    } else {
+      // send arg to searchDicht window
+    }
   })
 }
 
@@ -80,3 +84,4 @@ app.on('activate', () => {
 app.on('will-quit', () => {
   globalShortcut.unregisterAll()
 })
+
