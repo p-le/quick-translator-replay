@@ -46,7 +46,6 @@ function createWindow () {
     }).catch(err => console.log(err))
 
     translator.translateByModel(event, text).then(result => {
-      console.log(result)
       event.sender.send('translate/by/model', {
         result: JSON.stringify(result),
         status: false
@@ -60,6 +59,7 @@ function createWindow () {
       searchDictWindow.loadURL(`${winURL}/#/search`)
       searchDictWindow.once('ready-to-show', () => {
         searchDictWindow.show()
+        searchDictWindow.webContents.openDevTools()
       })
     } else {
       // send arg to searchDicht window

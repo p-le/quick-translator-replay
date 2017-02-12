@@ -1,7 +1,6 @@
 import * as fs from 'fs'
 
 export class Loader {
-
   loadHanVietDict () {
     console.log('load dict')
 

@@ -19,7 +19,6 @@ const router = new Router({
   history: true,
   routes
 })
-console.log(router)
 /* eslint-disable no-new */
 new Vue({
   router,

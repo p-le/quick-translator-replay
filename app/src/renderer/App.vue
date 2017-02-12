@@ -50,6 +50,8 @@
         this.$store.commit('GET_TEXT', {
           text
         })
+        console.log(this.$vuetify.toast)
+        this.$vuetify.toast.create('Copied from clipboard!', 'bottom', 1000)
       })
     },
     mounted () {
@@ -75,6 +77,7 @@
         this.$store.commit('GET_TEXT', {
           text
         })
+        this.$vuetify.toast.create('Copied from clipboard!', 'bottom', 1000)
       },
       fullscreen () {
         this.isFullscreen = !this.isFullscreen
@@ -94,14 +97,6 @@
   @import '../../../node_modules/vuetify/src/stylus/main';
   @import './css/main.css';
 
-  @keyframes fadein {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
   #import {
     position: fixed;
     bottom: 5.2rem;
@@ -127,7 +122,23 @@
     animation: fadein 0.5s;
   }
   .tw {
-    border-bottom: 1px solid #000;
-    padding-bottom: 1px;
+    position: relative;
+    padding-bottom: 2px;
+  }
+  .tw:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    border-bottom: 2px solid #2196f3;
+    transition: 0.4s;
+  }
+  .tw:hover:after {
+    width: 100%;
+  }
+  .row {
+    margin-left: 0;
+    margin-right: 0;
   }
 </style>

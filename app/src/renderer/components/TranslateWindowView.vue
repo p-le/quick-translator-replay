@@ -11,7 +11,8 @@
             <v-tabs-item id="c">
               <v-card>
                 <v-card-text @mouseup="select">
-                  <pre v-html="text"></pre>
+                  <pre v-if="isTranslatingModel" v-html="text"></pre>
+                  <pre v-else v-html="tokenizedText"></pre>
                 </v-card-text>
               </v-card>
             </v-tabs-item>
@@ -69,21 +70,23 @@
   export default {
     name: 'trasnlate-window',
     computed: {
-      text () {
-        return this.$store.getters.text
-      },
-      resultZhVn () {
-        return this.$store.getters.resultZhVn
-      },
-      resultByModel () {
-        console.log(this.$store.getters.resultMapByModel)
-        return this.$store.getters.resultByModel
-      },
       isTranslatingZhVn () {
         return this.$store.getters.isTranslatingZhVn
       },
       isTranslatingModel () {
         return this.$store.getters.isTranslatingModel
+      },
+      text () {
+        return this.$store.getters.text
+      },
+      tokenizedText () {
+        return this.$store.getters.tokenizedText
+      },
+      resultZhVn () {
+        return this.$store.getters.resultZhVn
+      },
+      resultByModel () {
+        return this.$store.getters.resultByModel
       }
     },
     created () {
@@ -106,7 +109,6 @@
             this.$store.commit('TRANSLATING_MODEL')
             break
           case false:
-            console.log(JSON.parse(args.result))
             this.$store.commit('TRANSLATE_MODEL_DONE', { result: JSON.parse(args.result) })
             break
         }
@@ -115,12 +117,14 @@
     methods: {
       select () {
         const selected = window.getSelection().toString()
-        console.log(selected)
         if (selected.length > 0) {
           ipcRenderer.send('search/dict', selected)
           window.getSelection().removeAllRanges()
           // menu.popup(remote.getCurrentWindow())
         }
+      },
+      mouseover (event) {
+        console.log(event.target)
       }
     }
   }

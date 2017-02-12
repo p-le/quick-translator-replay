@@ -17,6 +17,7 @@ export class Translator {
     loader.loadNameDict().then(dict => {
       this.nameDict = dict
     })
+    this.punctuations = [ '…', '？', '”', '“', '\'', ';', ':', '。', '，', '！', '.', '）', '（' ]
   }
 
   translateByModel (event, text) {
@@ -42,9 +43,12 @@ export class Translator {
           } else {
             const words = [...token]
             words.map(word => {
+              console.log(word)
               let translatedWord = '???'
               if (this.hanvietDict.has(word)) {
                 translatedWord = this.hanvietDict.get(word)
+              } else if (this.punctuations.includes(word)) {
+                translatedWord = word
               }
               translatedMap.set(word, translatedWord)
               translatedLine = translatedLine.replace(word, ' ' + translatedWord)
