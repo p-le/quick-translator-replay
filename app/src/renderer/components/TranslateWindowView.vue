@@ -3,58 +3,49 @@
     <v-row>
       <v-col xs5="xs5">
         <v-tabs grow>
-          <v-tabs-tabs>
-            <v-tab-item :item="{ text: 'Gốc', href: '#c'}" ripple></v-tab-item>
-            <v-tab-item :item="{ text: 'Trung', href: '#cv'}" ripple></v-tab-item>
-          </v-tabs-tabs>
-          <v-tabs-items>
-            <v-tabs-item id="c">
-              <v-card>
-                <v-card-text @mouseup="select">
-                  <pre v-if="isTranslatingModel" v-html="text"></pre>
-                  <pre v-else v-html="tokenizedText"></pre>
-                </v-card-text>
-              </v-card>
-            </v-tabs-item>
-            <v-tabs-item id="cv">
-              <v-card>
-                <v-card-text>
-                  <pre>{{ resultZhVn }}</pre>
-                </v-card-text>
-              </v-card>
-            </v-tabs-item>
-          </v-tabs-items>
+          <v-tab-item href="#c" ripple slot="activators">Gốc</v-tab-item>
+          <v-tab-item href="cv" ripple slot="activators">Trung</v-tab-item>
+          <v-tab-content id="c" slot="content">
+            <v-card>
+              <v-card-text @mouseup="select">
+                <pre v-if="isTranslatingModel" v-html="text"></pre>
+                <pre v-else v-html="tokenizedText"></pre>
+              </v-card-text>
+            </v-card>
+          </v-tab-content>
+          <v-tab-content id="cv" slot="content">
+            <v-card>
+              <v-card-text>
+                <pre>{{ resultZhVn }}</pre>
+              </v-card-text>
+            </v-card>
+          </v-tab-content>
         </v-tabs>
       </v-col>
       <v-col xs7="xs7">
         <v-tabs grow>
-          <v-tabs-tabs>
-            <v-tab-item :item="{ text: 'Dịch 1 nghĩa', href: '#one-meaning' }" ripple></v-tab-item>
-            <v-tab-item :item="{ text: 'Dịch nhiều nghĩa', href: '#multi-meaning' }" ripple></v-tab-item>
-          </v-tabs-tabs>
-          <v-tabs-items>
-            <v-tabs-item id="one-meaning">
-              <v-card>
-                <v-card-text v-if="isTranslatingModel" id="loading">
-                  <v-progress-circular indeterminate v-bind:size="50" class="primary--text"></v-progress-circular>
-                </v-card-text>
-                <v-card-text v-else>
-                  <pre v-html="resultByModel"></pre>
-                </v-card-text>
-              </v-card>
-            </v-tabs-item>
-            <v-tabs-item id="multi-meaning">
-              <v-card>
-                <v-card-text>...</v-card-text>
-              </v-card>
-            </v-tabs-item>
-          </v-tabs-items>
+          <v-tab-item href="#one-meaning" ripple slot="activators">Dịch 1 nghĩa</v-tab-item>
+          <v-tab-item href="#multi-meaning" ripple slot="activators">Dịch nhiều nghĩa</v-tab-item>
+          <v-tab-content id="one-meaning" slot="content">
+            <v-card>
+              <v-card-text v-if="isTranslatingModel" id="loading">
+                <v-progress-circular indeterminate v-bind:size="50" class="primary--text"></v-progress-circular>
+              </v-card-text>
+              <v-card-text v-else>
+                <pre v-html="resultByModel"></pre>
+              </v-card-text>
+            </v-card>
+          </v-tab-content >
+          <v-tab-content id="multi-meaning" slot="content">
+            <v-card>
+              <v-card-text>...</v-card-text>
+            </v-card>
+          </v-tab-content>
         </v-tabs>
       </v-col>
-    </v-row>
-    <v-row>
-      <v-col xs2="xs2">河伯</v-col>
-      <v-col xs10="xs10"></v-col>
+      <v-col xs12="xs12">
+        <v-chip class="primary white--text" >{{ searchText }}</v-chip>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -87,6 +78,9 @@
       },
       resultByModel () {
         return this.$store.getters.resultByModel
+      },
+      searchText () {
+        return this.$store.getters.searchText
       }
     },
     created () {
@@ -113,12 +107,18 @@
             break
         }
       })
+      ipcRenderer.on('search/dict/result', (event, result) => {
+        console.log(result)
+      })
     },
     methods: {
       select () {
         const selected = window.getSelection().toString()
         if (selected.length > 0) {
-          ipcRenderer.send('search/dict', selected)
+          this.$store.commit('SEARCH_TEXT', {
+            text: selected
+          })
+          ipcRenderer.send('search/dict/text', selected)
           window.getSelection().removeAllRanges()
           // menu.popup(remote.getCurrentWindow())
         }
@@ -131,19 +131,13 @@
 </script>
 
 <style scoped>
-v-container {
-  margin-top: 1rem;
-}
-
-.tabs__tabs {
-  height: 40px;
-}
-
 .tabs__item {
   height: 500px;
   overflow: auto;
 }
-
+.chip {
+  font-size: 24px;
+}
 .row .col {
   padding: 0 !important;
 }

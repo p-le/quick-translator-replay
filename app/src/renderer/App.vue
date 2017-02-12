@@ -1,36 +1,37 @@
 <template>
-  <div id="#app">
-    <v-navbar>
-      <v-navbar-logo>Quick Translator</v-navbar-logo>
-      <v-navbar-items>
-        <v-navbar-item v-bind:item="{ href: '#!', icon: 'remove' }" @click.native="minimize"></v-navbar-item>
-        <v-navbar-item v-bind:item="{ href: '#!', icon: isFullscreen ? 'fullscreen_exit' : 'fullscreen' }" @click.native="fullscreen"></v-navbar-item>
-        <v-navbar-item v-bind:item="{ href: '#!', icon: 'clear' }" @click.native="exit"></v-navbar-item>
-      </v-navbar-items>
-    </v-navbar>
-    <router-view></router-view>
-    <v-btn
-      v-tooltip:left="{ html: 'Import from text file' }"
-      floating
-      info
-      id="import"
-      @click.native="importText($event)"
-      ripple
-    >
-      <v-icon>note_add</v-icon>
-    </v-btn>
-    <v-btn
-      v-tooltip:left="{ html: 'Copy Text from Clipboard' }"
-      floating
-      large
-      info
-      id="take-clipboard"
-      @click.native="getText($event)"
-      ripple
-    >
-      <v-icon>library_books</v-icon>
-    </v-btn>
-  </div>
+  <v-app id="#app" top-toolbar sidebar-under-toolbar footer>
+    <v-toolbar>
+      <v-toolbar-side-icon @click.native.stop="openSideNav = !openSideNav" />
+      <v-toolbar-title> Quick Translator </v-toolbar-title>
+      <v-toolbar-items>
+        <v-toolbar-item @click.native="minimize"><v-btn icon dark><v-icon>remove</v-icon></v-btn></v-toolbar-item>
+        <v-toolbar-item @click.native="fullscreen">
+          <v-btn icon dark>
+            <v-icon v-if="isFullscreen">fullscreen_exit</v-icon>
+            <v-icon v-else>fullscreen</v-icon>
+          </v-btn>
+        </v-toolbar-item>
+        <v-toolbar-item @click.native="exit"><v-btn icon dark><v-icon>clear</v-icon></v-btn></v-toolbar-item>
+      </v-toolbar-items>
+    </v-toolbar>
+    <main>
+      <v-sidebar left fixed drawer v-model="openSideNav" close-on-click class="blue darken-2">
+        <v-list>
+          <v-list-item v-for="i in 3">
+            <v-list-tile>
+              <v-list-tile-title>Item {{ i }}</v-list-tile-title>
+            </v-list-tile>
+          </v-list-item>
+        </v-list>
+      </v-sidebar>
+      <v-content>
+        <router-view></router-view>
+      </v-content>
+    </main>
+    <v-footer>
+      <div class="text-xs-center">Copyright &#169; P-le, 2017</div>
+    </v-footer>
+  </v-app>
 </template>
 
 <script>
@@ -40,7 +41,8 @@
     name: 'app',
     data: () => {
       return {
-        isFullscreen: false
+        isFullscreen: false,
+        openSideNav: false
       }
     },
     created () {
@@ -50,12 +52,8 @@
         this.$store.commit('GET_TEXT', {
           text
         })
-        console.log(this.$vuetify.toast)
         this.$vuetify.toast.create('Copied from clipboard!', 'bottom', 1000)
       })
-    },
-    mounted () {
-      this.$vuetify.init()
     },
     methods: {
       importText (event) {
@@ -96,30 +94,44 @@
 <style lang="stylus">
   @import '../../../node_modules/vuetify/src/stylus/main';
   @import './css/main.css';
-
+  #app {
+    min-height: 100%;
+  }
   #import {
     position: fixed;
-    bottom: 5.2rem;
-    right:  1.9rem;
+    bottom: 105px;
+    right:  19px;
   }
   #take-clipboard {
     position: fixed;
-    bottom: 1rem;
-    right: 1rem;
+    bottom: 45px;
+    right: 10px;
   }
-  .navbar__logo {
-    font-size: 1.6rem;
+  .toolbar__logo {
+    font-size: 1.5rem;
   }
-  .navbar {
-    height: 2.4rem;
+  .toolbar {
+    height: 45px;
+    padding: 0;
     -webkit-app-region: drag;
   }
-  .navbar__items li {
+  .sidebar {
+    margin-top: 45px !important;
+  }
+  .with.bottom-footer.with.top-toolbar main, .with.bottom-footer.with.top-fixed-toolbar main {
+    min-height: calc(100vh - 45px - 45px)
+  }
+  .with.top-toolbar main > .content {
+    padding-top: 0;
+  }
+  .toolbar > .toolbar__items, .toolbar > .toolbar__side-icon {
     -webkit-app-region: no-drag;
   }
-  #app {
-    min-height: 100%;
-    animation: fadein 0.5s;
+  .tabs__tabs {
+    height: 40px;
+  }
+  .tab__item {
+    font-size: 0.8rem;
   }
   .tw {
     position: relative;

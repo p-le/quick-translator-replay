@@ -1,8 +1,9 @@
 'use strict'
 
 import { app, BrowserWindow, ipcMain, globalShortcut, clipboard } from 'electron'
-import { Translator } from './translate/Translator'
 const electronLocalshortcut = require('electron-localshortcut')
+import { Translator } from './translate/Translator'
+import { DictFinder } from './translate/DictFinder'
 
 let mainWindow
 
@@ -13,19 +14,14 @@ const winURL = process.env.NODE_ENV === 'development'
 function createWindow () {
   mainWindow = new BrowserWindow({
     width: 1280,
+    show: false,
     height: 720,
     frame: false
   })
-  const searchDictWindow = new BrowserWindow({
-    parent: mainWindow,
-    show: false,
-    frame: false,
-    width: 320,
-    height: 640
-  })
-  mainWindow.loadURL(winURL)
 
-  let translator = new Translator()
+  mainWindow.loadURL(winURL)
+  const translator = new Translator()
+  const dictFinder = new DictFinder()
 
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -53,17 +49,23 @@ function createWindow () {
     }).catch(err => console.log(err))
   })
 
-  ipcMain.on('search/dict', (event, arg) => {
-    if (!searchDictWindow.isVisible()) {
-      searchDictWindow.focus()
-      searchDictWindow.loadURL(`${winURL}/#/search`)
-      searchDictWindow.once('ready-to-show', () => {
-        searchDictWindow.show()
-        searchDictWindow.webContents.openDevTools()
-      })
-    } else {
-      // send arg to searchDicht window
-    }
+  ipcMain.on('search/dict/text', (event, text) => {
+    Promise.all([
+      dictFinder.findLacVietDict(text),
+      dictFinder.findBabylonDict(text),
+      dictFinder.findThieuChuuDict(text)
+    ]).then(
+      ([resultLacviet, resultBabylon, resultThieuChuu]) => {
+        event.sender.send('search/dict/result', {
+          resultLacviet,
+          resultBabylon,
+          resultThieuChuu
+        })
+      }
+    )
+  })
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show()
   })
 }
 

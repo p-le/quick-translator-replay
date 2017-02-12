@@ -50,7 +50,7 @@
       "icon": "app/icons/icon.icns"
     },
     "win": {
-      "icon": "app/icons/icon.ico"
+      "icon": "app/icons/icon1.ico"
     },
     "linux": {
       "target": [
@@ -128,7 +128,7 @@
     "vue-loader": "^10.0.2",
     "vue-style-loader": "^1.0.0",
     "vue-template-compiler": "^2.1.10",
-    "vuetify": "^0.8.7",
+    "vuetify": "^0.8.8",
     "webpack": "^2.2.0",
     "webpack-dev-server": "^2.2.0",
     "webpack-merge": "^2.4.0"

@@ -19,3 +19,7 @@ export const translateZhVnDone = ({ commit }, payload) => {
 export const translateModelDone = ({ commit }, payload) => {
   commit(types.TRANSLATE_MODEL_DONE, payload)
 }
+
+export const searchText = ({ commit }, payload) => {
+  commit(types.SEARCH_TEXT, payload)
+}

@@ -30,7 +30,9 @@ export class Translator {
       const translatedMap = new Map()
 
       translatedLines = translatedLines.map(translatedLine => {
+        console.log(this.segmenter.analyze(translatedLine))
         const tokens = this.segmenter.analyze(translatedLine).split(' ')
+        console.log(tokens)
         tokens.map(token => {
           if (this.phraseDict.has(token)) {
             const translatedToken = this.phraseDict.get(token)
@@ -43,7 +45,6 @@ export class Translator {
           } else {
             const words = [...token]
             words.map(word => {
-              console.log(word)
               let translatedWord = '???'
               if (this.hanvietDict.has(word)) {
                 translatedWord = this.hanvietDict.get(word)
