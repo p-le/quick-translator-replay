@@ -17,7 +17,7 @@ export class Translator {
     loader.loadNameDict().then(dict => {
       this.nameDict = dict
     })
-    this.punctuations = [ '…', '？', '”', '“', '\'', ';', ':', '。', '，', '！', '.', '）', '（' ]
+    this.punctuations = [ 8220, 8221, 8230, 12290, 65292, 65311, '\'', ';', ':', '！', '.', '）', '（' ]
   }
 
   translateByModel (event, text) {
@@ -30,32 +30,53 @@ export class Translator {
       const translatedMap = new Map()
 
       translatedLines = translatedLines.map(translatedLine => {
-        console.log(this.segmenter.analyze(translatedLine))
         const tokens = this.segmenter.analyze(translatedLine).split(' ')
         console.log(tokens)
-        tokens.map(token => {
-          if (this.phraseDict.has(token)) {
-            const translatedToken = this.phraseDict.get(token)
-            translatedMap.set(token, translatedToken)
-            translatedLine = translatedLine.replace(token, ' ' + translatedToken)
-          } else if (this.nameDict.has(token)) {
-            const translatedToken = this.nameDict.get(token)
-            translatedMap.set(token, translatedToken)
-            translatedLine = translatedLine.replace(token, ' ' + translatedToken)
-          } else {
-            const words = [...token]
-            words.map(word => {
-              let translatedWord = '???'
-              if (this.hanvietDict.has(word)) {
-                translatedWord = this.hanvietDict.get(word)
-              } else if (this.punctuations.includes(word)) {
-                translatedWord = word
+        const compoundTokensIndexMap = this.getCompoundTokensIndexMap(tokens)
+
+        for (let i = 0; i < tokens.length; i++) {
+          let foundCompoundToken = false
+          if (compoundTokensIndexMap.has(i)) {
+            const indexs = compoundTokensIndexMap.get(i)
+            for (let [i, j] of indexs) {
+              const compoundToken = tokens.slice(i, j).join('')
+              console.log([i, j], compoundToken)
+              if (this.phraseDict.has(compoundToken)) {
+                const translatedToken = this.phraseDict.get(compoundToken)
+                translatedMap.set(compoundToken, translatedToken)
+                translatedLine = translatedLine.replace(compoundToken, ' ' + translatedToken)
+                foundCompoundToken = true
+              } else if (this.nameDict.has(compoundToken)) {
+                const translatedToken = this.nameDict.get(compoundToken)
+                translatedMap.set(compoundToken, translatedToken)
+                translatedLine = translatedLine.replace(compoundToken, ' ' + translatedToken)
+                foundCompoundToken = true
+              } else {
+                if (i + 1 === j) {
+                  const words = [...compoundToken]
+                  words.map(word => {
+                    let translatedWord = '???'
+                    if (this.hanvietDict.has(word)) {
+                      translatedWord = this.hanvietDict.get(word)
+                    }
+                    translatedMap.set(word, translatedWord)
+                    translatedLine = translatedLine.replace(word, ' ' + translatedWord)
+                  })
+                }
               }
-              translatedMap.set(word, translatedWord)
-              translatedLine = translatedLine.replace(word, ' ' + translatedWord)
+              if (foundCompoundToken) {
+                i = j + 1
+                break
+              }
+            }
+          } else {
+            const words = [...tokens[i]]
+            words.map(word => {
+              translatedMap.set(word, word)
+              translatedLine = translatedLine.replace(word, ' ' + word)
             })
           }
-        })
+        }
         return translatedLine
       })
 
@@ -158,5 +179,21 @@ export class Translator {
 
   captilize (word) {
     return word.charAt(0).toUpperCase() + word.slice(1)
+  }
+
+  getCompoundTokensIndexMap (tokens) {
+    const result = new Map()
+    tokens.map((token, i) => {
+      if (this.punctuations.indexOf(token.charCodeAt(0)) === -1) {
+        const compoundTokens = [[i, i + 1]]
+        for (let j = i + 1; j < tokens.length; j++) {
+          if (this.punctuations.indexOf(tokens[j].charCodeAt(0)) > -1) break
+          compoundTokens.push([i, j + 1])
+        }
+        compoundTokens.sort(([i1, j1], [i2, j2]) => j2 > j1)
+        result.set(i, compoundTokens)
+      }
+    })
+    return result
   }
 }
