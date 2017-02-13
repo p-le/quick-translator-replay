@@ -31,28 +31,28 @@ export class Translator {
 
       translatedLines = translatedLines.map(translatedLine => {
         const tokens = this.segmenter.analyze(translatedLine).split(' ')
-        console.log(tokens)
         const compoundTokensIndexMap = this.getCompoundTokensIndexMap(tokens)
 
         for (let i = 0; i < tokens.length; i++) {
-          let foundCompoundToken = false
+          let nextTokenIndex = -1
           if (compoundTokensIndexMap.has(i)) {
             const indexs = compoundTokensIndexMap.get(i)
-            for (let [i, j] of indexs) {
-              const compoundToken = tokens.slice(i, j).join('')
-              console.log([i, j], compoundToken)
+            console.log(indexs)
+            for (let [a, b] of indexs) {
+              const compoundToken = tokens.slice(a, b).join('')
+              console.log(compoundToken)
               if (this.phraseDict.has(compoundToken)) {
                 const translatedToken = this.phraseDict.get(compoundToken)
                 translatedMap.set(compoundToken, translatedToken)
                 translatedLine = translatedLine.replace(compoundToken, ' ' + translatedToken)
-                foundCompoundToken = true
+                nextTokenIndex = b - 1
               } else if (this.nameDict.has(compoundToken)) {
                 const translatedToken = this.nameDict.get(compoundToken)
                 translatedMap.set(compoundToken, translatedToken)
                 translatedLine = translatedLine.replace(compoundToken, ' ' + translatedToken)
-                foundCompoundToken = true
+                nextTokenIndex = b - 1
               } else {
-                if (i + 1 === j) {
+                if (a + 1 === b) {
                   const words = [...compoundToken]
                   words.map(word => {
                     let translatedWord = '???'
@@ -64,8 +64,9 @@ export class Translator {
                   })
                 }
               }
-              if (foundCompoundToken) {
-                i = j + 1
+              if (nextTokenIndex !== -1) {
+                console.log(translatedLine)
+                i = nextTokenIndex
                 break
               }
             }
@@ -191,6 +192,7 @@ export class Translator {
           compoundTokens.push([i, j + 1])
         }
         compoundTokens.sort(([i1, j1], [i2, j2]) => j2 > j1)
+        console.log(compoundTokens)
         result.set(i, compoundTokens)
       }
     })
