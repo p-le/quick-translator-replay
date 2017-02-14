@@ -23,3 +23,7 @@ export const translateModelDone = ({ commit }, payload) => {
 export const searchText = ({ commit }, payload) => {
   commit(types.SEARCH_TEXT, payload)
 }
+
+export const searchTextDone = ({ commit }, payload) => {
+  commit(types.SEARCH_TEXT_DONE, payload)
+}

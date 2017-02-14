@@ -2,12 +2,12 @@ import * as types from '../mutation-types'
 
 const state = {
   text: '',
-  tokenizedText: [],
+  tokenizedLines: [],
   isTranslatingZhVn: false,
   isTranslatingModel: false,
   resultZhVn: '',
-  resultByModel: [],
-  resultMapByModel: new Map()
+  tokenizedTranslateLines: [],
+  translateMap: new Map()
 }
 
 const mutations = {
@@ -18,17 +18,9 @@ const mutations = {
     state.isTranslatingModel = true
   },
   [types.TRANSLATE_MODEL_DONE] (state, payload) {
-    let tokenizedText = state.text
-    const resultMap = new Map(payload.result.map)
-    let result = payload.result.lines.join('\r\n')
-    /* eslint-disable no-unused-vars */
-    for (let [token, translatedToken] of resultMap.entries()) {
-      tokenizedText = tokenizedText.replace(token, `<span class='tw' @mouseover='mouseover($event)'>${token}</span>`)
-      result = result.replace(translatedToken, `<span class='tw'>${translatedToken}</span>`)
-    }
-    state.resultByModel = result.split(/\r?\n/).map(lines => `${lines}</br>`)
-    state.tokenizedText = tokenizedText.split(/\r?\n/).map(lines => `${lines}</br>`)
-    state.resultMapByModel = resultMap
+    state.tokenizedLines = payload.result.tokenizedLines
+    state.tokenizedTranslateLines = payload.result.tokenizedTranslateLines
+    state.translateMap = new Map(payload.result.map)
     state.isTranslatingModel = false
   },
   [types.TRANSLATING_ZHVN] (state, payload) {

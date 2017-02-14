@@ -7,9 +7,13 @@
           <v-tab-item href="cv" ripple slot="activators">Trung</v-tab-item>
           <v-tab-content id="c" slot="content">
             <v-card>
-              <v-card-text @mouseup="select" v-if="isTranslatingModel" v-html="text"> 
+              <v-card-text @mouseup="select" v-if="isTranslatingModel">
+                {{ text }} 
               </v-card-text>
-              <v-card-text @mouseup="select" v-else v-html="tokenizedText"> 
+              <v-card-text @mouseup="select" v-else>
+                <p v-for="(line, i) in tokenizedLines">
+                  <span v-for="(token, j) in line"  :class="['tw', `tw-${i}${j}`]" @mouseover="mouseover($event)" @mouseout="mouseout($event)" @click="click($event)">{{token}}</span><br />
+                </p>
               </v-card-text>
             </v-card>
           </v-tab-content>
@@ -31,7 +35,10 @@
               <v-card-text v-if="isTranslatingModel" id="loading">
                 <v-progress-circular indeterminate v-bind:size="50" class="primary--text"></v-progress-circular>
               </v-card-text>
-              <v-card-text v-else v-html="resultByModel">
+              <v-card-text v-else>
+                <p v-for="(line, i) in tokenizedTranslateLines">
+                  <span v-for="(token, j) in line" :class="['tw', `tw-${i}${j}`]" @mouseover="mouseover($event)" @mouseout="mouseout($event)">{{token + ' '}}</span><br />
+                </p>
               </v-card-text>
             </v-card>
           </v-tab-content >
@@ -42,8 +49,26 @@
           </v-tab-content>
         </v-tabs>
       </v-col>
-      <v-col xs12="xs12">
-        <v-chip class="primary white--text" >{{ searchText }}</v-chip>
+      <v-col xs3="xs3">
+        <div class="text-xs-center">
+          <v-chip class="primary white--text" >{{ searchText }}</v-chip>
+          <v-chip class="primary white--text" v-for="token in subTokens">{{token}}</v-chip>
+        </div>
+      </v-col>
+            <v-col xs3="xs3">
+        <div class="text-xs-center">
+          <v-chip class="primary white--text" >{{ lacvietResult }}</v-chip>
+        </div>
+      </v-col>
+      <v-col xs3="xs3">
+        <div class="text-xs-center">
+          <v-chip class="primary white--text" >{{ babylonResult }}</v-chip>
+        </div>
+      </v-col>
+      <v-col xs3="xs3">
+        <div class="text-xs-center">
+          <v-chip class="primary white--text" >{{ thieuchuuResult }}</v-chip>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -69,17 +94,29 @@
       text () {
         return this.$store.getters.text
       },
-      tokenizedText () {
-        return this.$store.getters.tokenizedText
+      tokenizedLines () {
+        return this.$store.getters.tokenizedLines
       },
       resultZhVn () {
         return this.$store.getters.resultZhVn
       },
-      resultByModel () {
-        return this.$store.getters.resultByModel
+      tokenizedTranslateLines () {
+        return this.$store.getters.tokenizedTranslateLines
       },
       searchText () {
         return this.$store.getters.searchText
+      },
+      subTokens () {
+        return this.$store.getters.subTokens
+      },
+      lacvietResult () {
+        return this.$store.getters.lacvietResult
+      },
+      babylonResult () {
+        return this.$store.getters.babylonResult
+      },
+      thieuchuuResult () {
+        return this.$store.getters.thieuchuuResult
       }
     },
     created () {
@@ -108,6 +145,9 @@
       })
       ipcRenderer.on('search/dict/result', (event, result) => {
         console.log(result)
+        this.$store.commit('SEARCH_TEXT_DONE', {
+          result
+        })
       })
     },
     methods: {
@@ -121,6 +161,25 @@
           window.getSelection().removeAllRanges()
           // menu.popup(remote.getCurrentWindow())
         }
+      },
+      click (event) {
+        const selected = event.target.innerText
+        this.$store.commit('SEARCH_TEXT', {
+          text: selected
+        })
+        ipcRenderer.send('search/dict/text', selected)
+      },
+      mouseover (event) {
+        const tokens = document.getElementsByClassName(event.target.className)
+        Array.from(tokens).map(token => {
+          token.className += ' underline'
+        })
+      },
+      mouseout (event) {
+        const tokens = document.getElementsByClassName(event.target.className)
+        Array.from(tokens).map(token => {
+          token.className = token.className.replace(' underline', '')
+        })
       }
     }
   }
@@ -132,7 +191,7 @@
   overflow: auto;
 }
 .chip {
-  font-size: 24px;
+  font-size: 20px;
 }
 .row .col {
   padding: 0 !important;

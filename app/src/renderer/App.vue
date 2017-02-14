@@ -86,9 +86,6 @@
       },
       minimize () {
         remote.getCurrentWindow().minimize()
-      },
-      mouseover (event) {
-        console.log(event.target)
       }
     }
   }
@@ -141,11 +138,11 @@
     padding-bottom: 2px;
     font-size: 1.3rem;
     transition: 0.4s;
-    border-bottom: 2px double transparent;
+    border-bottom: 3px solid transparent;
     cursor: pointer;
   }
-  .tw:hover {
-    border-bottom: 2px double #2196f3;
+  .underline {
+    border-bottom: 3px solid #2196f3;
   }
   .row {
     margin-left: 0;

@@ -26,13 +26,15 @@ export class Translator {
         status: true
       })
       const lines = text.split(/\r?\n/)
-      let translatedLines = lines
       const translatedMap = new Map()
+      const tokenizedLines = []
+      const tokenizedTranslateLines = []
 
-      translatedLines = translatedLines.map(translatedLine => {
-        const tokens = this.segmenter.analyze(translatedLine).split(' ')
+      lines.map(line => {
+        const tokens = this.segmenter.analyze(line).split(' ')
         const compoundTokensIndexMap = this.getCompoundTokensIndexMap(tokens)
-
+        const tokenizedLine = []
+        const tokenizedTranslateLine = []
         for (let i = 0; i < tokens.length; i++) {
           let nextTokenIndex = -1
           if (compoundTokensIndexMap.has(i)) {
@@ -42,12 +44,14 @@ export class Translator {
               if (this.phraseDict.has(compoundToken)) {
                 const translatedToken = this.phraseDict.get(compoundToken)
                 translatedMap.set(compoundToken, translatedToken)
-                translatedLine = translatedLine.replace(compoundToken, ' ' + translatedToken)
+                tokenizedLine.push(compoundToken)
+                tokenizedTranslateLine.push(translatedToken)
                 nextTokenIndex = b - 1
               } else if (this.nameDict.has(compoundToken)) {
                 const translatedToken = this.nameDict.get(compoundToken)
                 translatedMap.set(compoundToken, translatedToken)
-                translatedLine = translatedLine.replace(compoundToken, ' ' + translatedToken)
+                tokenizedLine.push(compoundToken)
+                tokenizedTranslateLine.push(translatedToken)
                 nextTokenIndex = b - 1
               } else {
                 if (a + 1 === b) {
@@ -58,7 +62,8 @@ export class Translator {
                       translatedWord = this.hanvietDict.get(word)
                     }
                     translatedMap.set(word, translatedWord)
-                    translatedLine = translatedLine.replace(word, ' ' + translatedWord)
+                    tokenizedLine.push(word)
+                    tokenizedTranslateLine.push(translatedWord)
                   })
                 }
               }
@@ -79,15 +84,19 @@ export class Translator {
                   translatedWord = String.fromCharCode(tmp)
                 }
               }
-              translatedLine = translatedLine.replace(word, translatedWord)
+              tokenizedLine.push(word)
+              tokenizedTranslateLine.push(translatedWord)
             })
           }
         }
-        return translatedLine
+        tokenizedLines.push(tokenizedLine)
+        tokenizedTranslateLines.push(tokenizedTranslateLine)
       })
-
+      console.log(tokenizedLines)
+      console.log(tokenizedTranslateLines)
       resolve({
-        lines: translatedLines,
+        tokenizedLines: tokenizedLines,
+        tokenizedTranslateLines: tokenizedTranslateLines,
         map: translatedMap
       })
     })
@@ -197,10 +206,15 @@ export class Translator {
           compoundTokens.push([i, j + 1])
         }
         compoundTokens.sort(([i1, j1], [i2, j2]) => j2 > j1)
-        console.log(compoundTokens)
         result.set(i, compoundTokens)
       }
     })
     return result
+  }
+
+  getSubTokens (text) {
+    return new Promise((resolve, reject) => {
+      resolve(this.segmenter(text).split(' '))
+    })
   }
 }

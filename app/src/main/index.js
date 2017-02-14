@@ -53,13 +53,16 @@ function createWindow () {
     Promise.all([
       dictFinder.findLacVietDict(text),
       dictFinder.findBabylonDict(text),
-      dictFinder.findThieuChuuDict(text)
+      dictFinder.findThieuChuuDict(text),
+      translator.getSubTokens(text)
     ]).then(
-      ([resultLacviet, resultBabylon, resultThieuChuu]) => {
+      ([lacvietResult, babylonResult, thieuchuuResult, subTokens]) => {
+        console.log([lacvietResult, babylonResult, thieuchuuResult, subTokens])
         event.sender.send('search/dict/result', {
-          resultLacviet,
-          resultBabylon,
-          resultThieuChuu
+          lacvietResult,
+          babylonResult,
+          thieuchuuResult,
+          subTokens
         })
       }
     )
