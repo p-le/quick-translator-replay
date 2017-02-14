@@ -17,7 +17,7 @@ export class Translator {
     loader.loadNameDict().then(dict => {
       this.nameDict = dict
     })
-    this.punctuations = [ 8220, 8221, 8230, 12290, 65292, 65311, '\'', ';', ':', '！', '.', '）', '（' ]
+    this.punctuationDict = loader.loadPunctuationDict()
   }
 
   translateByModel (event, text) {
@@ -37,10 +37,8 @@ export class Translator {
           let nextTokenIndex = -1
           if (compoundTokensIndexMap.has(i)) {
             const indexs = compoundTokensIndexMap.get(i)
-            console.log(indexs)
             for (let [a, b] of indexs) {
               const compoundToken = tokens.slice(a, b).join('')
-              console.log(compoundToken)
               if (this.phraseDict.has(compoundToken)) {
                 const translatedToken = this.phraseDict.get(compoundToken)
                 translatedMap.set(compoundToken, translatedToken)
@@ -65,7 +63,6 @@ export class Translator {
                 }
               }
               if (nextTokenIndex !== -1) {
-                console.log(translatedLine)
                 i = nextTokenIndex
                 break
               }
@@ -73,8 +70,16 @@ export class Translator {
           } else {
             const words = [...tokens[i]]
             words.map(word => {
-              translatedMap.set(word, word)
-              translatedLine = translatedLine.replace(word, ' ' + word)
+              let translatedWord = word
+              if (this.punctuationDict.has(word.charCodeAt(0))) {
+                const tmp = this.punctuationDict.get(word.charCodeAt(0))
+                if (tmp instanceof Array) {
+                  translatedWord = String.fromCharCode.apply(null, tmp)
+                } else {
+                  translatedWord = String.fromCharCode(tmp)
+                }
+              }
+              translatedLine = translatedLine.replace(word, translatedWord)
             })
           }
         }
@@ -185,10 +190,10 @@ export class Translator {
   getCompoundTokensIndexMap (tokens) {
     const result = new Map()
     tokens.map((token, i) => {
-      if (this.punctuations.indexOf(token.charCodeAt(0)) === -1) {
+      if (!this.punctuationDict.has(token.charCodeAt(0))) {
         const compoundTokens = [[i, i + 1]]
         for (let j = i + 1; j < tokens.length; j++) {
-          if (this.punctuations.indexOf(tokens[j].charCodeAt(0)) > -1) break
+          if (this.punctuationDict.has(tokens[j].charCodeAt(0))) break
           compoundTokens.push([i, j + 1])
         }
         compoundTokens.sort(([i1, j1], [i2, j2]) => j2 > j1)

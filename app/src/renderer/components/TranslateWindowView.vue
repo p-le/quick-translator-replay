@@ -7,9 +7,9 @@
           <v-tab-item href="cv" ripple slot="activators">Trung</v-tab-item>
           <v-tab-content id="c" slot="content">
             <v-card>
-              <v-card-text @mouseup="select">
-                <pre v-if="isTranslatingModel" v-html="text"></pre>
-                <pre v-else v-html="tokenizedText"></pre>
+              <v-card-text @mouseup="select" v-if="isTranslatingModel" v-html="text"> 
+              </v-card-text>
+              <v-card-text @mouseup="select" v-else v-html="tokenizedText"> 
               </v-card-text>
             </v-card>
           </v-tab-content>
@@ -31,8 +31,7 @@
               <v-card-text v-if="isTranslatingModel" id="loading">
                 <v-progress-circular indeterminate v-bind:size="50" class="primary--text"></v-progress-circular>
               </v-card-text>
-              <v-card-text v-else>
-                <pre v-html="resultByModel"></pre>
+              <v-card-text v-else v-html="resultByModel">
               </v-card-text>
             </v-card>
           </v-tab-content >
@@ -122,9 +121,6 @@
           window.getSelection().removeAllRanges()
           // menu.popup(remote.getCurrentWindow())
         }
-      },
-      mouseover (event) {
-        console.log(event.target)
       }
     }
   }

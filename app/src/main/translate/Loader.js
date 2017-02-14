@@ -111,4 +111,26 @@ export class Loader {
       })
     })
   }
+  loadPunctuationDict () {
+    const dict = new Map()
+    dict.set(8220, 34)
+    dict.set(8221, 34)
+    dict.set(8230, [46, 46, 46])
+    dict.set(12290, 46)
+    dict.set(65292, 44)
+    dict.set(65282, 34)
+    dict.set(65281, 33)
+    dict.set(65287, 39)
+    dict.set(65289, 22)
+    dict.set(65307, 59)
+    dict.set(65288, 40)
+    dict.set(65294, 46)
+    dict.set(65306, 58)
+    dict.set(8216, 39)
+    dict.set(8217, 39)
+    dict.set(65311, 63)
+
+    return dict
+  }
 }
+

@@ -23,8 +23,8 @@ const mutations = {
     let result = payload.result.lines.join('\r\n')
     /* eslint-disable no-unused-vars */
     for (let [token, translatedToken] of resultMap.entries()) {
-      tokenizedText = tokenizedText.replace(token, `<span class="tw" @mouseover="mouseover($event)">${token}</span>`)
-      result = result.replace(translatedToken, `<span class="tw">${translatedToken}</span>`)
+      tokenizedText = tokenizedText.replace(token, `<span class='tw' @mouseover='mouseover($event)'>${token}</span>`)
+      result = result.replace(translatedToken, `<span class='tw'>${translatedToken}</span>`)
     }
     state.resultByModel = result.split(/\r?\n/).map(lines => `${lines}</br>`)
     state.tokenizedText = tokenizedText.split(/\r?\n/).map(lines => `${lines}</br>`)
