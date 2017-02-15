@@ -92,8 +92,6 @@ export class Translator {
         tokenizedLines.push(tokenizedLine)
         tokenizedTranslateLines.push(tokenizedTranslateLine)
       })
-      console.log(tokenizedLines)
-      console.log(tokenizedTranslateLines)
       resolve({
         tokenizedLines: tokenizedLines,
         tokenizedTranslateLines: tokenizedTranslateLines,
@@ -214,7 +212,7 @@ export class Translator {
 
   getSubTokens (text) {
     return new Promise((resolve, reject) => {
-      resolve(this.segmenter(text).split(' '))
+      resolve(this.segmenter.analyze(text).split(' '))
     })
   }
 }

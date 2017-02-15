@@ -25,5 +25,6 @@ export const searchText = ({ commit }, payload) => {
 }
 
 export const searchTextDone = ({ commit }, payload) => {
+  console.log(payload)
   commit(types.SEARCH_TEXT_DONE, payload)
 }

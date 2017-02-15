@@ -12,7 +12,9 @@
               </v-card-text>
               <v-card-text @mouseup="select" v-else>
                 <p v-for="(line, i) in tokenizedLines">
-                  <span v-for="(token, j) in line"  :class="['tw', `tw-${i}${j}`]" @mouseover="mouseover($event)" @mouseout="mouseout($event)" @click="click($event)">{{token}}</span><br />
+                  <span v-for="(token, j) in line"  :class="['tw', `tw-${i}${j}`]" 
+                    @mouseover="mouseover($event)" @mouseout="mouseout($event)" 
+                    @click="clickOriginal($event)">{{token}}</span><br />
                 </p>
               </v-card-text>
             </v-card>
@@ -37,7 +39,11 @@
               </v-card-text>
               <v-card-text v-else>
                 <p v-for="(line, i) in tokenizedTranslateLines">
-                  <span v-for="(token, j) in line" :class="['tw', `tw-${i}${j}`]" @mouseover="mouseover($event)" @mouseout="mouseout($event)">{{token + ' '}}</span><br />
+                  <span v-for="(token, j) in line" :class="['tw', `tw-${i}${j}`]" 
+                    @mouseover="mouseover($event)" @mouseout="mouseout($event)"
+                    @click="clickTranslated($event)">
+                      {{token.indexOf('/') > -1 ? token.split('/')[0] + '* ' : token + ' '}}
+                  </span><br />
                 </p>
               </v-card-text>
             </v-card>
@@ -49,25 +55,17 @@
           </v-tab-content>
         </v-tabs>
       </v-col>
+    </v-row>
+    <v-row>
       <v-col xs3="xs3">
-        <div class="text-xs-center">
-          <v-chip class="primary white--text" >{{ searchText }}</v-chip>
-          <v-chip class="primary white--text" v-for="token in subTokens">{{token}}</v-chip>
+        <div class="text-xs-center search_container" id="search_words_container">
+          <v-chip class="primary white--text" v-if="searchText.length > 0">{{ searchText }}</v-chip>
+          <v-chip class="primary white--text" v-for="token in subTokens" v-if="subTokens.length > 1">{{token}}</v-chip>
         </div>
       </v-col>
-            <v-col xs3="xs3">
-        <div class="text-xs-center">
-          <v-chip class="primary white--text" >{{ lacvietResult }}</v-chip>
-        </div>
-      </v-col>
-      <v-col xs3="xs3">
-        <div class="text-xs-center">
-          <v-chip class="primary white--text" >{{ babylonResult }}</v-chip>
-        </div>
-      </v-col>
-      <v-col xs3="xs3">
-        <div class="text-xs-center">
-          <v-chip class="primary white--text" >{{ thieuchuuResult }}</v-chip>
+      <v-col xs9="xs9">
+        <div class="search_container">
+          {{ lacvietResult }}
         </div>
       </v-col>
     </v-row>
@@ -84,6 +82,11 @@
 
   export default {
     name: 'trasnlate-window',
+    data: () => {
+      return {
+        lastTokens: []
+      }
+    },
     computed: {
       isTranslatingZhVn () {
         return this.$store.getters.isTranslatingZhVn
@@ -144,9 +147,8 @@
         }
       })
       ipcRenderer.on('search/dict/result', (event, result) => {
-        console.log(result)
         this.$store.commit('SEARCH_TEXT_DONE', {
-          result
+          result: result
         })
       })
     },
@@ -162,8 +164,33 @@
           // menu.popup(remote.getCurrentWindow())
         }
       },
-      click (event) {
+      clickOriginal (event) {
+        const tokens = document.getElementsByClassName(event.target.className)
+        this.lastTokens.map(token => {
+          token.className = token.className.replace(' selected', '')
+        })
+        this.lastTokens = Array.from(tokens)
+        Array.from(tokens).map(token => {
+          token.className += ' selected'
+        })
+
         const selected = event.target.innerText
+        this.$store.commit('SEARCH_TEXT', {
+          text: selected
+        })
+        ipcRenderer.send('search/dict/text', selected)
+      },
+      clickTranslated (event) {
+        const tokens = document.getElementsByClassName(event.target.className)
+        this.lastTokens.map(token => {
+          token.className = token.className.replace(' selected', '')
+        })
+        this.lastTokens = Array.from(tokens)
+        Array.from(tokens).map(token => {
+          token.className += ' selected'
+        })
+
+        const selected = Array.from(tokens).filter(token => token.innerText !== event.target.innerText)[0].innerText
         this.$store.commit('SEARCH_TEXT', {
           text: selected
         })
@@ -191,7 +218,7 @@
   overflow: auto;
 }
 .chip {
-  font-size: 20px;
+  font-size: 16px;
 }
 .row .col {
   padding: 0 !important;
@@ -214,5 +241,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+#search_words_container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.tw {
+  position: relative;
+  padding: 2px 0;
+  font-size: 1.3rem;
+  transition: 0.4s;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+}
+.tw.underline {
+  border-bottom: 3px solid #2196f3;
+}
+.tw.selected {
+  background-color: #2196f3;
+  color: white;
+}
+.search_container {
+  min-height: calc(100vh - 45px - 45px - 500px - 40px)
 }
 </style>

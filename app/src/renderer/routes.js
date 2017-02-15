@@ -5,8 +5,8 @@ export default [
     component: require('components/TranslateWindowView')
   },
   {
-    path: '/search',
-    name: 'search-window',
-    component: require('components/SearchWindowView')
+    path: '/test',
+    name: 'test-window',
+    component: require('components/TestView')
   }
 ]

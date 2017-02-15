@@ -13,7 +13,6 @@ const mutations = {
     state.searchText = payload.text
   },
   [types.SEARCH_TEXT_DONE] (state, payload) {
-    console.log(payload)
     state.subTokens = payload.result.subTokens
     state.lacvietResult = payload.result.lacvietResult
     state.babylonResult = payload.result.babylonResult

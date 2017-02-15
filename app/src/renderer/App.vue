@@ -17,9 +17,14 @@
     <main>
       <v-sidebar left fixed drawer v-model="openSideNav" close-on-click class="blue darken-2">
         <v-list>
-          <v-list-item v-for="i in 3">
+          <v-list-item>
             <v-list-tile>
-              <v-list-tile-title>Item {{ i }}</v-list-tile-title>
+              <router-link to="/">translate</router-link>
+            </v-list-tile>
+          </v-list-item>
+          <v-list-item>
+            <v-list-tile>
+              <router-link to="/test">Test</router-link>
             </v-list-tile>
           </v-list-item>
         </v-list>
@@ -133,19 +138,11 @@
   .tab__item {
     font-size: 0.8rem;
   }
-  .tw {
-    position: relative;
-    padding-bottom: 2px;
-    font-size: 1.3rem;
-    transition: 0.4s;
-    border-bottom: 3px solid transparent;
-    cursor: pointer;
-  }
-  .underline {
-    border-bottom: 3px solid #2196f3;
-  }
   .row {
     margin-left: 0;
     margin-right: 0;
+  }
+  .chip {
+    cursor: pointer;
   }
 </style>

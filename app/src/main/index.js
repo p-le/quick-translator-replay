@@ -57,14 +57,14 @@ function createWindow () {
       translator.getSubTokens(text)
     ]).then(
       ([lacvietResult, babylonResult, thieuchuuResult, subTokens]) => {
-        console.log([lacvietResult, babylonResult, thieuchuuResult, subTokens])
         event.sender.send('search/dict/result', {
           lacvietResult,
           babylonResult,
           thieuchuuResult,
           subTokens
         })
-      }
+      },
+      (reason) => console.log(reason)
     )
   })
   mainWindow.once('ready-to-show', () => {
