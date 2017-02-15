@@ -39,11 +39,13 @@
               </v-card-text>
               <v-card-text v-else>
                 <p v-for="(line, i) in tokenizedTranslateLines">
-                  <span v-for="(token, j) in line" :class="['tw', `tw-${i}${j}`]" 
-                    @mouseover="mouseover($event)" @mouseout="mouseout($event)"
-                    @click="clickTranslated($event)">
+                  <draggable :list="line">
+                    <span v-for="(token, j) in line" :class="['tw', `tw-${i}${j}`]" 
+                     @mouseover="mouseover($event)" @mouseout="mouseout($event)"
+                      @click="clickTranslated($event)" @contextmenu="rightClickTranslated($event)">
                       {{token.indexOf('/') > -1 ? token.split('/')[0] + '* ' : token + ' '}}
-                  </span><br />
+                    </span><br />
+                  </draggable>
                 </p>
               </v-card-text>
             </v-card>
@@ -74,6 +76,8 @@
 
 <script>
   import { ipcRenderer, remote } from 'electron'
+  import draggable from 'vuedraggable'
+
   const { Menu, MenuItem } = remote
   const menu = new Menu()
   menu.append(new MenuItem({label: 'Add Vietpharse', click () { console.log('item 1 clicked') }}))
@@ -86,6 +90,9 @@
       return {
         lastTokens: []
       }
+    },
+    components: {
+      draggable
     },
     computed: {
       isTranslatingZhVn () {
@@ -196,6 +203,10 @@
         })
         ipcRenderer.send('search/dict/text', selected)
       },
+      rightClickTranslated (event) {
+        console.log(event.target)
+        menu.popup(remote.getCurrentWindow())
+      },
       mouseover (event) {
         const tokens = document.getElementsByClassName(event.target.className)
         Array.from(tokens).map(token => {
@@ -214,7 +225,7 @@
 
 <style scoped>
 .tabs__item {
-  height: 500px;
+  height: 450px;
   overflow: auto;
 }
 .chip {
@@ -265,6 +276,7 @@
   color: white;
 }
 .search_container {
-  min-height: calc(100vh - 45px - 45px - 500px - 40px)
+  height: calc(100vh - 45px - 45px - 450px - 40px);
+  overflow-y: auto;
 }
 </style>
