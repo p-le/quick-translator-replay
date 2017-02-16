@@ -41,8 +41,13 @@
                 <p v-for="(line, i) in tokenizedTranslateLines">
                     <span v-for="(token, j) in line" :class="['tw', `tw-${i}${j}`]" 
                      @mouseover="mouseover($event)" @mouseout="mouseout($event)"
-                      @click="clickTranslated($event)" @contextmenu="rightClickTranslated($event)">
-                      {{token.indexOf('/') > -1 ? token.split('/')[0] + '*' : token}}
+                      @click="clickTranslated($event)" @contextmenu="rightClickTranslated($event)" >
+                      <template v-if="token.indexOf('/') > -1" >
+                        {{token.split('/')}}
+                      </template>
+                      <template v-else>
+                        {{token}}
+                      </template>
                     </span><br />
                 </p>
               </v-card-text>
