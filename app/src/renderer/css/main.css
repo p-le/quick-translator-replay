@@ -16,3 +16,7 @@ pre {
     line-height: 2rem;
     font-size: 18px;
 }
+
+p {
+  margin: 0;
+}

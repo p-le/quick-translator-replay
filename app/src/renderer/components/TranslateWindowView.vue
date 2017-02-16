@@ -37,15 +37,13 @@
               <v-card-text v-if="isTranslatingModel" id="loading">
                 <v-progress-circular indeterminate v-bind:size="50" class="primary--text"></v-progress-circular>
               </v-card-text>
-              <v-card-text v-else>
+              <v-card-text v-else >
                 <p v-for="(line, i) in tokenizedTranslateLines">
-                  <draggable :list="line">
                     <span v-for="(token, j) in line" :class="['tw', `tw-${i}${j}`]" 
                      @mouseover="mouseover($event)" @mouseout="mouseout($event)"
                       @click="clickTranslated($event)" @contextmenu="rightClickTranslated($event)">
-                      {{token.indexOf('/') > -1 ? token.split('/')[0] + '* ' : token + ' '}}
+                      {{token.indexOf('/') > -1 ? token.split('/')[0] + '*' : token}}
                     </span><br />
-                  </draggable>
                 </p>
               </v-card-text>
             </v-card>
@@ -62,12 +60,16 @@
       <v-col xs3="xs3">
         <div class="text-xs-center search_container" id="search_words_container">
           <v-chip class="primary white--text" v-if="searchText.length > 0">{{ searchText }}</v-chip>
-          <v-chip class="primary white--text" v-for="token in subTokens" v-if="subTokens.length > 1">{{token}}</v-chip>
+          <div id="subtoken_container">
+            <v-chip outline class="primary primary--text" v-for="token in subTokens" v-if="subTokens.length > 1">{{token}}</v-chip>
+          </div>
         </div>
       </v-col>
       <v-col xs9="xs9">
         <div class="search_container">
-          {{ lacvietResult }}
+          <p v-for="line of lacvietResult">
+            {{ line }}
+          </p>
         </div>
       </v-col>
     </v-row>
@@ -76,7 +78,6 @@
 
 <script>
   import { ipcRenderer, remote } from 'electron'
-  import draggable from 'vuedraggable'
 
   const { Menu, MenuItem } = remote
   const menu = new Menu()
@@ -90,9 +91,6 @@
       return {
         lastTokens: []
       }
-    },
-    components: {
-      draggable
     },
     computed: {
       isTranslatingZhVn () {
@@ -153,7 +151,12 @@
             break
         }
       })
-      ipcRenderer.on('search/dict/result', (event, result) => {
+      ipcRenderer.on('search/dict/text/result', (event, result) => {
+        this.$store.commit('SEARCH_TEXT_DONE', {
+          result: result
+        })
+      })
+      ipcRenderer.on('search/dict/subtoken/result', (event, result) => {
         this.$store.commit('SEARCH_TEXT_DONE', {
           result: result
         })
@@ -262,7 +265,7 @@
 }
 .tw {
   position: relative;
-  padding: 2px 0;
+  padding: 4px 1px 2px 1px;
   font-size: 1.3rem;
   transition: 0.4s;
   border-bottom: 3px solid transparent;
@@ -274,9 +277,26 @@
 .tw.selected {
   background-color: #2196f3;
   color: white;
+  border-radius: 5px;
 }
 .search_container {
+  padding: 10px 0;
   height: calc(100vh - 45px - 45px - 450px - 40px);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+}
+.search_container > p {
+  margin-bottom: 0;
+}
+
+#subtoken_container {
+  width: 80%;
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
 }
 </style>

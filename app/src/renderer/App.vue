@@ -15,16 +15,21 @@
       </v-toolbar-items>
     </v-toolbar>
     <main>
-      <v-sidebar left fixed drawer v-model="openSideNav" close-on-click class="blue darken-2">
+      <v-sidebar left fixed drawer v-model="openSideNav" closeOnClick class="blue darken-2">
         <v-list>
           <v-list-item>
-            <v-list-tile>
-              <router-link to="/">translate</router-link>
+            <v-list-tile router ripple href="/">
+                <v-list-tile-title>Translate</v-list-tile-title> 
             </v-list-tile>
           </v-list-item>
           <v-list-item>
-            <v-list-tile>
-              <router-link to="/test">Test</router-link>
+            <v-list-tile router ripple href="/dict">
+                <v-list-tile-title>Dict</v-list-tile-title> 
+            </v-list-tile>
+          </v-list-item>
+          <v-list-item>
+            <v-list-tile router ripple href="/test">
+                <v-list-tile-title>Test</v-list-tile-title> 
             </v-list-tile>
           </v-list-item>
         </v-list>
@@ -47,7 +52,12 @@
     data: () => {
       return {
         isFullscreen: false,
-        openSideNav: false
+        openSideNav: false,
+        items: [
+          { text: 'Translate', href: '/' },
+          { text: 'Dict', href: '/dict' },
+          { text: 'Test', href: '/test' }
+        ]
       }
     },
     created () {
@@ -138,9 +148,20 @@
   .tab__item {
     font-size: 0.8rem;
   }
+  .list__tile--active > .list__tile__title {
+    color: #fff !important;
+    border-bottom: 2px solid white;
+  }
+  .list__tile__title {
+    padding-bottom: 10px;
+  }
   .row {
     margin-left: 0;
     margin-right: 0;
+  }
+  .row .col {
+    padding-left: 0;
+    padding-right: 0;
   }
   .chip {
     cursor: pointer;
