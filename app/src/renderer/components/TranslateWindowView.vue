@@ -30,8 +30,7 @@
       </v-col>
       <v-col xs7="xs7">
         <v-tabs grow>
-          <v-tab-item href="#one-meaning" ripple slot="activators">Dịch 1 nghĩa</v-tab-item>
-          <v-tab-item href="#multi-meaning" ripple slot="activators">Dịch nhiều nghĩa</v-tab-item>
+          <v-tab-item href="#one-meaning" ripple slot="activators">Dịch</v-tab-item>
           <v-tab-content id="one-meaning" slot="content">
             <v-card>
               <v-card-text v-if="isTranslatingModel" id="loading">
@@ -39,25 +38,41 @@
               </v-card-text>
               <v-card-text v-else >
                 <p v-for="(line, i) in tokenizedTranslateLines">
-                    <span v-for="(token, j) in line" :class="['tw', `tw-${i}${j}`]" 
-                     @mouseover="mouseover($event)" @mouseout="mouseout($event)"
-                      @click="clickTranslated($event)" @contextmenu="rightClickTranslated($event)" >
-                      <template v-if="token.indexOf('/') > -1" >
-                        {{token.split('/')}}
-                      </template>
-                      <template v-else>
-                        {{token}}
-                      </template>
-                    </span><br />
+                    <template v-for="(token, j) in line">
+                      <span :class="['tw', `tw-${i}${j}`]"
+                        @mouseover="mouseover($event)"
+                        @mouseout="mouseout($event)"
+                        @click="clickTranslated($event)" 
+                        @contextmenu="rightClickTranslated($event)"
+                        v-if="token.indexOf('/') === -1"
+                      >
+                        {{ token }}
+                      </span>
+                      <span v-else>
+                        <span :class="['tw', `tw-${i}${j}`]"
+                          @mouseover="mouseover($event)"
+                          @mouseout="mouseout($event)"
+                          @click="clickTranslated($event)" 
+                          @contextmenu="rightClickTranslated($event)"
+                        >
+                          {{ token }}
+                        </span>
+                        <v-menu bottom origin="center center" transition="v-scale-transition">
+                          <v-icon class="blue--text text--darken-2 more" slot="activator">reply</v-icon>
+                          <v-list>
+                            <v-list-item v-for="item in token.split('/')">
+                              <v-list-tile @click.native="chooseMeaning(`tw tw-${i}${j}`, item)">
+                                <v-list-tile-title>{{ item }}</v-list-tile-title>
+                              </v-list-tile>
+                            </v-list-item>
+                          </v-list>
+                        </v-menu>
+                      </span>
+                    </template>
                 </p>
               </v-card-text>
             </v-card>
           </v-tab-content >
-          <v-tab-content id="multi-meaning" slot="content">
-            <v-card>
-              <v-card-text>...</v-card-text>
-            </v-card>
-          </v-tab-content>
         </v-tabs>
       </v-col>
     </v-row>
@@ -232,6 +247,9 @@
         console.log(event.target)
         menu.popup(remote.getCurrentWindow())
       },
+      chooseMeaning (target, meaning) {
+        document.getElementsByClassName(target)[1].innerText = meaning
+      },
       mouseover (event) {
         const tokens = document.getElementsByClassName(event.target.className)
         Array.from(tokens).map(token => {
@@ -326,5 +344,8 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
+}
+.more {
+  font-size: 15px !important;
 }
 </style>
