@@ -4,6 +4,7 @@ import { app, BrowserWindow, ipcMain, globalShortcut, clipboard } from 'electron
 const electronLocalshortcut = require('electron-localshortcut')
 import { Translator } from './translate/Translator'
 import { DictFinder } from './translate/DictFinder'
+import { BinarySearchTree } from './utils/BinarySearchTree'
 
 let mainWindow
 
@@ -14,8 +15,8 @@ const winURL = process.env.NODE_ENV === 'development'
 function createWindow () {
   mainWindow = new BrowserWindow({
     width: 1280,
-    show: false,
     height: 720,
+    show: false,
     frame: false
   })
 
@@ -26,7 +27,8 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-
+  const bst = new BinarySearchTree((a, b) => a - b)
+  console.log(bst)
   electronLocalshortcut.register('CommandOrControl+V', () => {
     let text = clipboard.readText()
     text = text.split(/\r?\n/).filter(line => line !== '').map(line => line.trimLeft()).join('\r\n')
@@ -67,13 +69,14 @@ function createWindow () {
       (reason) => console.log(reason)
     )
   })
+
   ipcMain.on('search/dict/subtoken', (event, text) => {
     Promise.all([
       dictFinder.findLacVietDict(text),
       dictFinder.findBabylonDict(text),
       dictFinder.findThieuChuuDict(text)
     ]).then(
-      ([lacvietResult, babylonResult, thieuchuuResult, subTokens]) => {
+      ([lacvietResult, babylonResult, thieuchuuResult]) => {
         event.sender.send('search/dict/subtoken/result', {
           lacvietResult,
           babylonResult,
@@ -83,6 +86,7 @@ function createWindow () {
       (reason) => console.log(reason)
     )
   })
+
   ipcMain.on('dict/count', (event, arg) => {
     event.sender.send('dict/count/result', {
       Phrase: translator.phraseDict.size,
@@ -93,6 +97,7 @@ function createWindow () {
       ThieuChuu: dictFinder.thieuChuuDict.size
     })
   })
+
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
   })
