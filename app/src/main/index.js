@@ -4,7 +4,7 @@ import { app, BrowserWindow, ipcMain, globalShortcut, clipboard } from 'electron
 const electronLocalshortcut = require('electron-localshortcut')
 import { Translator } from './translate/Translator'
 import { DictFinder } from './translate/DictFinder'
-import { BinarySearchTree } from './utils/BinarySearchTree'
+import { Segmenter } from './segmenter'
 
 let mainWindow
 
@@ -27,8 +27,10 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-  const bst = new BinarySearchTree((a, b) => a - b)
-  console.log(bst)
+
+  const segmenter = new Segmenter()
+  segmenter.analyze('一声略带凄切的叫声惊醒了莫无忌')
+
   electronLocalshortcut.register('CommandOrControl+V', () => {
     let text = clipboard.readText()
     text = text.split(/\r?\n/).filter(line => line !== '').map(line => line.trimLeft()).join('\r\n')

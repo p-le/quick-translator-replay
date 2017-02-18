@@ -15,7 +15,13 @@
       </v-col>
       <v-col xs10="xs10">
         <div>
-
+            <v-text-input  name="search" 
+              label="Testing 2" 
+              v-model="text"
+            ></v-text-input>
+        </div>
+        <div>
+          
         </div>
       </v-col>
     </v-row>
