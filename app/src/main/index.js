@@ -4,6 +4,7 @@ import { app, BrowserWindow, ipcMain, globalShortcut, clipboard } from 'electron
 const electronLocalshortcut = require('electron-localshortcut')
 import { Translator } from './translate/Translator'
 import { DictFinder } from './translate/DictFinder'
+import { BinarySearchTree } from './utils/BinarySearchTree'
 
 let mainWindow
 
@@ -26,7 +27,8 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-
+  const bst = new BinarySearchTree((a, b) => a - b)
+  console.log(bst)
   electronLocalshortcut.register('CommandOrControl+V', () => {
     let text = clipboard.readText()
     text = text.split(/\r?\n/).filter(line => line !== '').map(line => line.trimLeft()).join('\r\n')
@@ -67,6 +69,24 @@ function createWindow () {
       (reason) => console.log(reason)
     )
   })
+
+  ipcMain.on('search/dict/subtoken', (event, text) => {
+    Promise.all([
+      dictFinder.findLacVietDict(text),
+      dictFinder.findBabylonDict(text),
+      dictFinder.findThieuChuuDict(text)
+    ]).then(
+      ([lacvietResult, babylonResult, thieuchuuResult]) => {
+        event.sender.send('search/dict/result', {
+          lacvietResult,
+          babylonResult,
+          thieuchuuResult
+        })
+      },
+      (reason) => console.log(reason)
+    )
+  })
+
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
   })
