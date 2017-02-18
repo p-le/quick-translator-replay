@@ -23,6 +23,16 @@ const mutations = {
     console.log(state.lacvietResult)
     state.babylonResult = payload.result.babylonResult
     state.thieuchuuResult = payload.result.thieuchuuResult
+  },
+  [types.SEARCH_SUBTOKEN_DONE] (state, payload) {
+    if (payload.result.lacvietResult.indexOf('\\n') > -1) {
+      state.lacvietResult = payload.result.lacvietResult.split('\\n').map(line => line.replace('\\t', ''))
+    } else {
+      state.lacvietResult = [payload.result.lacvietResult]
+    }
+    console.log(state.lacvietResult)
+    state.babylonResult = payload.result.babylonResult
+    state.thieuchuuResult = payload.result.thieuchuuResult
   }
 }
 
