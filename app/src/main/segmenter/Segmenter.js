@@ -138,33 +138,48 @@ export class Segmenter {
   }
 
   parseCJK () {
+    console.log('*****')
     const charType = this.inputCharTypes[this.currentIndex]
     if (charType !== CharType.USELESS) {
-      const hit = Dictionary.matching(
+      console.log(this.input[this.currentIndex])
+      const currentHit = Dictionary.matching(
         this.dictionary.mainDict,
         this.input,
         this.currentIndex,
+        this.currentIndex + 1
       )
-      // if (this.cjk.hits.length > 0) {
 
-      // }
-      console.log(hit.begin, hit.end, hit.state)
-      if (hit.isMatch()) {
-        const lexeme = new Lexeme(hit.start, hit.end, LexemeType.CNWORD)
-        // this.addLexeme(lexeme)
-        console.log(lexeme)
-        if (hit.isPrefix()) {
-          this.cjk.hits.push(hit)
+      const additionalHits = []
+      this.cjk.hits.map(oldHit => {
+        const additionalHit = Dictionary.matching(
+          this.dictionary.mainDict,
+          this.input,
+          oldHit.begin,
+          this.currentIndex + 1
+        )
+        console.log('Addition: ' + JSON.stringify(additionalHit))
+        if (additionalHit.isMatch()) {
+          const lexeme = new Lexeme(oldHit.begin, additionalHit.end, LexemeType.CNUM)
+          console.log(JSON.stringify(lexeme))
         }
-      } else if (hit.isPrefix()) {
-        console.log('prefix ' + hit.begin, hit.end)
-        this.cjk.hits.push(hit)
-      } else {
-        console.log('unmatch ', hit.begin, hit.end)
+        if (additionalHit.isPrefix()) {
+          additionalHits.push(additionalHit)
+        }
+      })
+      this.cjk.hits = additionalHits
+
+      console.log(JSON.stringify(currentHit))
+      if (currentHit.isMatch()) {
+        const lexeme = new Lexeme(currentHit.begin, currentHit.end, LexemeType.CNWORD)
+        console.log(JSON.stringify(lexeme))
+      }
+      if (currentHit.isPrefix()) {
+        this.cjk.hits.push(currentHit)
       }
     } else {
       this.cjk.hits = []
     }
+    console.log(this.cjk.hits)
   }
 
   addLexeme (newLexeme) {

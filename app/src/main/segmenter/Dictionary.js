@@ -44,19 +44,17 @@ export class Dictionary {
     })
   }
 
-  static matching (dict, input, begin) {
+  static matching (dict, input, begin, end) {
     const hit = new Hit()
     hit.begin = begin
-    hit.end = begin + 1
-
-    const result = dict.getNode(input.slice(begin, begin + 1))
+    hit.end = end
+    const result = dict.getNode(input.slice(begin, end))
     if (result) {
-      console.log('childs: ' + Object.keys(result.childs))
+      console.log('childs: ' + Object.keys(result.childs).length)
       if (Object.keys(result.childs).length > 0) {
-        hit.state = HitState.MATCH
-      } else {
-        hit.trieNode = result
         hit.state = HitState.PREFIX
+      } else {
+        hit.state = HitState.MATCH
       }
     }
 

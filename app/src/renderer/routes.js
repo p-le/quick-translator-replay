@@ -13,5 +13,9 @@ export default [
     path: '/dict',
     name: 'dict-window',
     component: require('components/DictView')
+  },
+  {
+    path: '*',
+    redirect: '/'
   }
 ]

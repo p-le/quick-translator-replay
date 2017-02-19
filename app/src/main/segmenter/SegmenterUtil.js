@@ -33,7 +33,6 @@ export const HitState = {
 
 export class Hit {
   constructor () {
-    this.trieNode = null
     this.state = HitState.UNMATCH
     this.begin = 0
     this.end = 0
@@ -53,10 +52,10 @@ export class Hit {
 }
 
 export class Lexeme {
-  constructor (type, begin, end) {
-    this.type = type
+  constructor (begin, end, type) {
     this.begin = begin
     this.end = end
+    this.type = type
   }
   static compare (l1, l2) {
     let result = Priority.UNPREFERED
