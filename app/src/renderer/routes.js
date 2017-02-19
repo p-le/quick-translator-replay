@@ -8,5 +8,10 @@ export default [
     path: '/test',
     name: 'test-window',
     component: require('components/TestView')
+  },
+  {
+    path: '/dict',
+    name: 'dict-window',
+    component: require('components/DictView')
   }
 ]

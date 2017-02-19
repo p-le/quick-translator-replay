@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuetify from 'vuetify'
 import Electron from 'vue-electron'
 import Resource from 'vue-resource'
+import Sortable from 'vue-sortable'
 import Router from 'vue-router'
 
 import App from './App'
@@ -12,6 +13,7 @@ Vue.use(Electron)
 Vue.use(Resource)
 Vue.use(Router)
 Vue.use(Vuetify)
+Vue.use(Sortable)
 Vue.config.debug = true
 
 const router = new Router({

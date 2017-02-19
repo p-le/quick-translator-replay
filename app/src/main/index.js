@@ -59,7 +59,7 @@ function createWindow () {
       translator.getSubTokens(text)
     ]).then(
       ([lacvietResult, babylonResult, thieuchuuResult, subTokens]) => {
-        event.sender.send('search/dict/result', {
+        event.sender.send('search/dict/text/result', {
           lacvietResult,
           babylonResult,
           thieuchuuResult,
@@ -77,7 +77,7 @@ function createWindow () {
       dictFinder.findThieuChuuDict(text)
     ]).then(
       ([lacvietResult, babylonResult, thieuchuuResult]) => {
-        event.sender.send('search/dict/result', {
+        event.sender.send('search/dict/subtoken/result', {
           lacvietResult,
           babylonResult,
           thieuchuuResult
@@ -85,6 +85,17 @@ function createWindow () {
       },
       (reason) => console.log(reason)
     )
+  })
+
+  ipcMain.on('dict/count', (event, arg) => {
+    event.sender.send('dict/count/result', {
+      Phrase: translator.phraseDict.size,
+      Name: translator.nameDict.size,
+      Hanviet: translator.hanvietDict.size,
+      Lacviet: dictFinder.lacvietDict.size,
+      Babylon: dictFinder.babylonDict.size,
+      ThieuChuu: dictFinder.thieuChuuDict.size
+    })
   })
 
   mainWindow.once('ready-to-show', () => {

@@ -23,18 +23,24 @@ export class DictFinder {
       for (let i = 0; i < words.length; i++) {
         console.log(words[i])
       }
-      resolve(this.lacvietDict.get(text))
+      let result = this.lacvietDict.get(text)
+      if (!result) result = ''
+      resolve(result)
     })
   }
 
   findBabylonDict (text) {
     return new Promise((resolve, reject) => {
+      let result = this.babylonDict.get(text)
+      if (!result) result = ''
       resolve(this.babylonDict.get(text))
     })
   }
 
   findThieuChuuDict (text) {
     return new Promise((resolve, reject) => {
+      let result = this.thieuChuuDict.get(text)
+      if (!result) result = ''
       resolve(this.thieuChuuDict.get(text))
     })
   }
