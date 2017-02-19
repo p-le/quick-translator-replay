@@ -1,14 +1,14 @@
 export const LexemeType = {
-  TYPE_UNKNOWN: 0,
-  TYPE_ENGLISH: 1,
-  TYPE_ARABIC: 2,
-  TYPE_LETTER: 3,
-  TYPE_CNWORD: 4,
-  TYPE_CNCHAR: 64,
-  TYPE_OTHER_CJK: 8,
-  TYPE_CNUM: 16,
-  TYPE_COUNT: 32,
-  TYPE_CQUAN: 48
+  UNKNOWN: 0,
+  ENGLISH: 1,
+  ARABIC: 2,
+  LETTER: 3,
+  CNWORD: 4,
+  CNCHAR: 64,
+  OTHER_CJK: 8,
+  CNUM: 16,
+  COUNT: 32,
+  CQUAN: 48
 }
 
 export const CharType = {
@@ -23,6 +23,33 @@ export const Priority = {
   UNPREFERED: -1,
   SAME: 0,
   PREFERED: 1
+}
+
+export const HitState = {
+  UNMATCH: 0,
+  MATCH: 1,
+  PREFIX: 2
+}
+
+export class Hit {
+  constructor () {
+    this.trieNode = null
+    this.state = HitState.UNMATCH
+    this.begin = 0
+    this.end = 0
+  }
+
+  isMatch () {
+    return (this.state & HitState.MATCH) > 0
+  }
+
+  isPrefix () {
+    return (this.state & HitState.PREFIX) > 0
+  }
+
+  isUnmatch () {
+    return this.state === HitState.UNMATCH
+  }
 }
 
 export class Lexeme {

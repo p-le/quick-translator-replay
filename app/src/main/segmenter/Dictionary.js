@@ -1,4 +1,5 @@
 import { Trie } from '../utils/Trie'
+import { Hit, HitState } from './SegmenterUtil'
 import * as fs from 'fs'
 
 const MAIN_DIC_PATH = `${__dirname}/dict/main.dic`
@@ -24,6 +25,7 @@ export class Dictionary {
       this.stopWordDict = Trie.from(stopWords)
       this.suffixDict = Trie.from(suffixs)
       this.surnameDict = Trie.from(surnames)
+      console.log(this)
     },
     (reason) => console.log(reason))
   }
@@ -40,5 +42,24 @@ export class Dictionary {
         })
       })
     })
+  }
+
+  static matching (dict, input, begin) {
+    const hit = new Hit()
+    hit.begin = begin
+    hit.end = begin + 1
+
+    const result = dict.getNode(input.slice(begin, begin + 1))
+    if (result) {
+      console.log('childs: ' + Object.keys(result.childs))
+      if (Object.keys(result.childs).length > 0) {
+        hit.state = HitState.MATCH
+      } else {
+        hit.trieNode = result
+        hit.state = HitState.PREFIX
+      }
+    }
+
+    return hit
   }
 }

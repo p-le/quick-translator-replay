@@ -1,6 +1,6 @@
 import { Dictionary } from './Dictionary'
-import { SegmenterUtil, CharType, Priority, Lexeme } from './SegmenterUtil'
-import { LetterParser } from './LetterParser'
+import { IKArbitrator } from './IKArbitrator'
+import { SegmenterUtil, CharType, LexemeType, Priority, Lexeme } from './SegmenterUtil'
 import { DoubleLinkedList } from '../utils/DoubleLinkedList'
 
 export class Segmenter {
@@ -9,43 +9,161 @@ export class Segmenter {
     this.input = ''
     this.inputCharTypes = []
     this.currentIndex = 0
-    this.maxIndex = 0
     this.dictionary = new Dictionary()
-    this.parsers = [new LetterParser()]
     this.lexemes = new DoubleLinkedList()
+    this.IKArbitrator = new IKArbitrator()
+    this.english = {
+      start: -1,
+      end: -1
+    }
+    this.arabic = {
+      start: -1,
+      end: -1
+    }
+    this.letter = {
+      start: -1,
+      end: -1
+    }
+    this.cnum = {
+      start: -1,
+      end: -1
+    }
+    this.quantifier = {
+      start: -1,
+      end: -1,
+      countHits: []
+    }
+    this.cjk = {
+      hits: []
+    }
   }
 
   reset (input) {
     this.input = input
-    this.currentIndex = 0
-    this.maxIndex = input.length
     this.inputCharTypes = [...input].map(char => {
       char = SegmenterUtil.normalize(char)
       return SegmenterUtil.getCharType(char)
     })
+    this.currentIndex = 0
   }
 
   analyze (input) {
     if (!input) return input
     this.reset(input)
-    while (this.currentIndex < this.maxIndex) {
+    while (this.currentIndex < this.input.length) {
       this.parseLetter()
+      // this.parseQuantifer()
+      this.parseCJK()
       this.currentIndex++
     }
-    return ''
+    this.IKArbitrator.process()
+    return this.toResult()
   }
 
   parseLetter () {
     const LETTER_CONNECTOR = ['#', '&', '+', '-', '.', '@', '_']
     const charType = this.inputCharTypes[this.currentIndex]
 
-    if (charType === CharType.ARABIC || charType === CharType.ENGLISH) {
+    if (charType === CharType.ENGLISH) {
+      this.english.start = (this.english.start === -1) ? this.currentIndex : this.english.start
+      this.english.end = this.currentIndex
+    } else {
+      if (this.english.start !== -1) {
+        const lexeme = new Lexeme(this.english.start, this.english.end, LexemeType.ENGLISH)
+        console.log(`English: ${lexeme}`)
+        this.addLexeme(lexeme)
+        this.english.start = -1
+        this.english.end = -1
+      }
+    }
 
+    if (charType !== CharType.USELESS && !LETTER_CONNECTOR.includes(this.input[this.currentIndex])) {
+      if (charType === CharType.ARABIC) {
+        this.arabic.start = (this.arabic.start === -1) ? this.currentIndex : this.arabic.start
+        this.arabic.end = this.currentIndex
+      } else {
+        if (this.arabic.start !== -1) {
+          const lexeme = new Lexeme(this.arabic.start, this.arabic.end, LexemeType.ARABIC)
+          console.log(`Arabic: ${lexeme}`)
+          this.addLexeme(lexeme)
+          this.arabic.start = -1
+          this.arabic.end = -1
+        }
+      }
+    }
+
+    if (charType === CharType.ARABIC || charType === CharType.ENGLISH) {
+      this.letter.start = (this.letter.start === -1) ? this.currentIndex : this.letter.start
+      this.letter.end = this.currentIndex
     } else if (charType === CharType.USELESS || LETTER_CONNECTOR.includes(this.input[this.currentIndex])) {
+      this.letter.end = this.currentIndex
+    } else {
+      if (this.letter.start !== -1) {
+        const lexeme = new Lexeme(this.letter.start, this.letter.end, LexemeType.LETTER)
+        console.log(`Letter: ${lexeme}`)
+        this.addLexeme(lexeme)
+        this.letter.start = -1
+        this.letter.end = -1
+      }
+    }
+  }
+
+  parseQuantifier () {
+    const CNUM = '０１２３４５６７８９〇一二两三四五六七八九十零壹贰叁肆伍陆柒捌玖拾百佰千仟万萬亿億拾佰仟萬亿億兆卅廿'
+
+    const charType = this.inputCharTypes[this.currentIndex]
+    if ([CharType.CHINESE, CharType.ARABIC].includes(charType) &&
+      CNUM.indexOf(this.input[this.currentIndex]) > -1) {
+      this.quantifier.start = (this.quantifier.start === -1) ? this.currentIndex : this.quantifier.start
+      this.quantifier.end = this.currentIndex
+    } else {
+      if (this.quantifier.start !== -1) {
+        const lexeme = new Lexeme(this.quantifier.start, this.quantifier.end, LexemeType.CNUM)
+        this.lexemes.add(lexeme)
+        this.quantifier.start = -1
+        this.cnquantifierum.end = -1
+      }
+    }
+
+    if (charType === CharType.CHINESE) {
 
     } else {
-      const lexeme = new Lexeme()
-      this.addLexeme(lexeme)
+      this.quantifier.countHits = []
+      const hit = this.dictionary.quantifierDict.getNode(this.input[this.currentIndex])
+      if (hit.isMatch()) {
+        const lexeme = new Lexeme(this.currentIndex, this.currentIndex + 1, LexemeType.COUNT)
+        this.addLexeme(lexeme)
+      }
+    }
+  }
+
+  parseCJK () {
+    const charType = this.inputCharTypes[this.currentIndex]
+    if (charType !== CharType.USELESS) {
+      const hit = Dictionary.matching(
+        this.dictionary.mainDict,
+        this.input,
+        this.currentIndex,
+      )
+      // if (this.cjk.hits.length > 0) {
+
+      // }
+      console.log(hit.begin, hit.end, hit.state)
+      if (hit.isMatch()) {
+        const lexeme = new Lexeme(hit.start, hit.end, LexemeType.CNWORD)
+        // this.addLexeme(lexeme)
+        console.log(lexeme)
+        if (hit.isPrefix()) {
+          this.cjk.hits.push(hit)
+        }
+      } else if (hit.isPrefix()) {
+        console.log('prefix ' + hit.begin, hit.end)
+        this.cjk.hits.push(hit)
+      } else {
+        console.log('unmatch ', hit.begin, hit.end)
+      }
+    } else {
+      this.cjk.hits = []
     }
   }
 
@@ -61,9 +179,14 @@ export class Segmenter {
           break
         case Priority.SAME: break
         case Priority.UNPREFERED:
-          this.lexemes.insertBefore(this.lexemes.head, newLexeme)
+          this.lexemes.pop()
+          this.addLexeme(newLexeme)
           break
       }
     }
+  }
+
+  toResult () {
+
   }
 }
