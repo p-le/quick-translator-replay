@@ -64,6 +64,13 @@
         "filter": [
           "**/*"
         ]
+      },
+      {
+        "from": "custom_dicts",
+        "to": "custom_dicts",
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "nsis": {

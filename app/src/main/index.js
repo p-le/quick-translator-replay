@@ -2,9 +2,8 @@
 
 import { app, BrowserWindow, ipcMain, globalShortcut, clipboard } from 'electron'
 const electronLocalshortcut = require('electron-localshortcut')
-import { Translator } from './translate/Translator'
-import { DictFinder } from './translate/DictFinder'
-import { BinarySearchTree } from './utils/BinarySearchTree'
+import { Translator, DictFinder } from './translate'
+import { Segmenter } from './segmenter'
 
 let mainWindow
 
@@ -23,12 +22,12 @@ function createWindow () {
   mainWindow.loadURL(winURL)
   const translator = new Translator()
   const dictFinder = new DictFinder()
+  const segmenter = new Segmenter()
 
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-  const bst = new BinarySearchTree((a, b) => a - b)
-  console.log(bst)
+
   electronLocalshortcut.register('CommandOrControl+V', () => {
     let text = clipboard.readText()
     text = text.split(/\r?\n/).filter(line => line !== '').map(line => line.trimLeft()).join('\r\n')
@@ -96,6 +95,10 @@ function createWindow () {
       Babylon: dictFinder.babylonDict.size,
       ThieuChuu: dictFinder.thieuChuuDict.size
     })
+  })
+
+  ipcMain.on('test', (event, arg) => {
+    segmenter.analyze(arg)
   })
 
   mainWindow.once('ready-to-show', () => {
