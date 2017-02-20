@@ -25,7 +25,6 @@ export class Dictionary {
       this.stopWordDict = Trie.from(stopWords)
       this.suffixDict = Trie.from(suffixs)
       this.surnameDict = Trie.from(surnames)
-      console.log(this)
     },
     (reason) => console.log(reason))
   }
@@ -48,11 +47,15 @@ export class Dictionary {
     const hit = new Hit()
     hit.begin = begin
     hit.end = end
+    console.log(input.slice(begin, end))
     const result = dict.getNode(input.slice(begin, end))
+
     if (result) {
-      console.log('childs: ' + Object.keys(result.childs).length)
       if (Object.keys(result.childs).length > 0) {
         hit.state = HitState.PREFIX
+        if (result.isWord) {
+          hit.state = HitState.MATCH_N_PREFIX
+        }
       } else {
         hit.state = HitState.MATCH
       }

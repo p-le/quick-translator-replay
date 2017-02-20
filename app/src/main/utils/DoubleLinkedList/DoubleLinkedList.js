@@ -14,13 +14,14 @@ export class DoubleLinkedList {
       this.tail = node
     } else {
       this.tail.next = node
-      node.pref = this.tail
+      node.prev = this.tail
       this.tail = node
     }
     this.length++
   }
 
-  insertAfter (targetNode, newNode) {
+  insertAfter (targetNode, data) {
+    const newNode = new DoubleLinkedListNode(data)
     newNode.prev = targetNode
     if (!targetNode.next) {
       this.tail = newNode
@@ -31,7 +32,8 @@ export class DoubleLinkedList {
     targetNode.next = newNode
   }
 
-  insertBefore (targetNode, newNode) {
+  insertBefore (targetNode, data) {
+    const newNode = new DoubleLinkedListNode(data)
     newNode.next = targetNode
     if (!targetNode.prev) {
       this.head = newNode
@@ -57,7 +59,7 @@ export class DoubleLinkedList {
     const node = this.tail
     this.tail.prev.next = null
     this.tail = this.tail.prev
-
+    this.length--
     return node
   }
 

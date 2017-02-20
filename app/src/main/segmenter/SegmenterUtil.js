@@ -1,3 +1,5 @@
+import { DoubleLinkedList } from '../utils/DoubleLinkedList'
+
 export const LexemeType = {
   UNKNOWN: 0,
   ENGLISH: 1,
@@ -28,7 +30,8 @@ export const Priority = {
 export const HitState = {
   UNMATCH: 0,
   MATCH: 1,
-  PREFIX: 2
+  PREFIX: 2,
+  MATCH_N_PREFIX: 3
 }
 
 export class Hit {
@@ -39,15 +42,19 @@ export class Hit {
   }
 
   isMatch () {
-    return (this.state & HitState.MATCH) > 0
+    return this.state === HitState.MATCH
   }
 
   isPrefix () {
-    return (this.state & HitState.PREFIX) > 0
+    return this.state === HitState.PREFIX
   }
 
   isUnmatch () {
     return this.state === HitState.UNMATCH
+  }
+
+  isMatchNPrefix () {
+    return this.state === HitState.MATCH_N_PREFIX
   }
 }
 
@@ -57,6 +64,7 @@ export class Lexeme {
     this.end = end
     this.type = type
   }
+
   static compare (l1, l2) {
     let result = Priority.UNPREFERED
 
@@ -68,6 +76,61 @@ export class Lexeme {
       } else if (l1.end === l2.end) {
         return Priority.SAME
       }
+    }
+    return result
+  }
+
+  static prioritize (lexemeList, newLexeme) {
+    if (lexemeList.length === 0) {
+      lexemeList.add(newLexeme)
+    } else {
+      const priority = Lexeme.compare(lexemeList.tail.data, newLexeme)
+      switch (priority) {
+        case Priority.PREFERED:
+          console.log('PREFERED')
+          lexemeList.add(newLexeme)
+          break
+        case Priority.SAME:
+          console.log('SAME')
+          break
+        case Priority.UNPREFERED:
+          console.log('UNPREFERED')
+          // lexemeList.pop()
+          // this.prioritizeLexeme(newLexeme)
+          break
+      }
+    }
+  }
+}
+
+export class LexemePath {
+  constructor () {
+    this.lexemes = new DoubleLinkedList()
+    this.begin = -1
+    this.end = -1
+    this.payload = 0
+  }
+
+  static isCross (lexemePath, lexeme) {
+    return ((lexemePath.begin < lexeme.begin && lexeme.begin < lexemePath.end) ||
+      (lexemePath.begin >= lexeme.begin && lexemePath.begin < lexeme.end))
+  }
+
+  static addCrossLexeme (lexemePath, lexeme) {
+    let result = false
+    if (lexemePath.length === 0) {
+      Lexeme.prioritize(lexemePath.lexemes, lexeme)
+      lexemePath.begin = lexeme.begin
+      lexemePath.end = lexeme.end
+      lexemePath.payload += lexeme.begin - lexeme.end
+      result = true
+    } else if (LexemePath.isCross(lexemePath, lexeme)) {
+      Lexeme.prioritize(LexemePath.lexemes, lexeme)
+      if (lexeme.end > lexemePath.end) {
+        lexemePath.end = lexeme.end
+      }
+      lexemePath.payload = lexemePath.end - lexemePath.begin
+      result = true
     }
     return result
   }

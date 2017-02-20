@@ -15,8 +15,8 @@ export class Trie {
         childs[char] = childNode
       }
       childs = childNode.childs
-      if (index === chars.length) {
-        childNode.isLeaf = true
+      if (index === chars.length - 1) {
+        childNode.isWord = true
       }
     })
   }
