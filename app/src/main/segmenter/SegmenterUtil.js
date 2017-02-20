@@ -101,6 +101,10 @@ export class Lexeme {
       }
     }
   }
+
+  static compound () {
+    console.log('compound')
+  }
 }
 
 export class LexemePath {
@@ -118,7 +122,7 @@ export class LexemePath {
 
   static addCrossLexeme (lexemePath, lexeme) {
     let result = false
-    if (lexemePath.length === 0) {
+    if (lexemePath.lexemes.length === 0) {
       Lexeme.prioritize(lexemePath.lexemes, lexeme)
       lexemePath.begin = lexeme.begin
       lexemePath.end = lexeme.end
@@ -133,6 +137,10 @@ export class LexemePath {
       result = true
     }
     return result
+  }
+
+  static judge (lexemePath, lexeme) {
+
   }
 }
 
@@ -180,4 +188,5 @@ export class SegmenterUtil {
     }
     return char
   }
+
 }

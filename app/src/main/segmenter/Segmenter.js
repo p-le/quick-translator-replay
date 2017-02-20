@@ -76,7 +76,7 @@ export class Segmenter {
       if (this.english.start !== -1) {
         const lexeme = new Lexeme(this.english.start, this.english.end, LexemeType.ENGLISH)
         console.log(`English: ${lexeme}`)
-        Lexeme.priotize(this.lexemes, lexeme)
+        Lexeme.prioritize(this.lexemes, lexeme)
         this.english.start = -1
         this.english.end = -1
       }
@@ -90,7 +90,7 @@ export class Segmenter {
         if (this.arabic.start !== -1) {
           const lexeme = new Lexeme(this.arabic.start, this.arabic.end, LexemeType.ARABIC)
           console.log(`Arabic: ${lexeme}`)
-          Lexeme.priotize(this.lexemes, lexeme)
+          Lexeme.prioritize(this.lexemes, lexeme)
           this.arabic.start = -1
           this.arabic.end = -1
         }
@@ -106,7 +106,7 @@ export class Segmenter {
       if (this.letter.start !== -1) {
         const lexeme = new Lexeme(this.letter.start, this.letter.end, LexemeType.LETTER)
         console.log(`Letter: ${lexeme}`)
-        Lexeme.priotize(this.lexemes, lexeme)
+        Lexeme.prioritize(this.lexemes, lexeme)
         this.letter.start = -1
         this.letter.end = -1
       }
@@ -137,7 +137,7 @@ export class Segmenter {
       const hit = this.dictionary.quantifierDict.getNode(this.input[this.currentIndex])
       if (hit.isMatch()) {
         const lexeme = new Lexeme(this.currentIndex, this.currentIndex + 1, LexemeType.COUNT)
-        Lexeme.priotize(this.lexemes, lexeme)
+        Lexeme.prioritize(this.lexemes, lexeme)
       }
     }
   }
@@ -165,7 +165,7 @@ export class Segmenter {
         if (additionalHit.isMatchNPrefix() || additionalHit.isMatch()) {
           const lexeme = new Lexeme(oldHit.begin, additionalHit.end, LexemeType.CNWORD)
           console.log('Lexeme: ' + JSON.stringify(lexeme))
-          Lexeme.priotize(this.lexemes, lexeme)
+          Lexeme.prioritize(this.lexemes, lexeme)
           this.lexemes.traverseForward((node) => {
             console.log([node.data.begin, node.data.end])
           })
@@ -179,7 +179,7 @@ export class Segmenter {
       if (currentHit.isMatchNPrefix() || currentHit.isMatch()) {
         const lexeme = new Lexeme(currentHit.begin, currentHit.end, LexemeType.CNWORD)
         console.log('Lexeme: ' + JSON.stringify(lexeme))
-        Lexeme.priotize(this.lexemes, lexeme)
+        Lexeme.prioritize(this.lexemes, lexeme)
         this.lexemes.traverseForward((node) => {
           console.log([node.data.begin, node.data.end])
         })
@@ -194,16 +194,37 @@ export class Segmenter {
   }
 
   arbitrate () {
-    const lexemePath = new LexemePath()
-    this.lexemes.traverseForward(lexeme => {
-      const result = LexemePath.addCrossLexeme(lexemePath, lexeme)
+    console.log('-------------------------------')
+    let lexemePath = new LexemePath()
+    this.lexemes.traverseForward(node => {
+      const result = LexemePath.addCrossLexeme(lexemePath, node.data)
       if (!result) {
-        console.log(result)
+        if (lexemePath.lexemes.length === 1) {
+          this.pathMap.set(lexemePath.begin, lexemePath)
+        } else {
+          const judgeResult = LexemePath.judge(lexemePath, lexemePath.lexemes.head.data)
+          this.pathMap.set(judgeResult.begin, judgeResult)
+        }
+        lexemePath = new LexemePath()
+        LexemePath.addCrossLexeme(lexemePath, node.data)
       }
+      console.log(result, [node.data.begin, node.data.end])
     })
+    if (lexemePath.lexemes.length === 1) {
+      this.pathMap.set(lexemePath.begin, lexemePath)
+    } else {
+      const judgeResult = LexemePath.judge(lexemePath, lexemePath.lexemes.head.data)
+      this.pathMap.set(judgeResult.begin, judgeResult)
+    }
+    console.log(this.pathMap)
   }
 
   toResult () {
-
+    const lexemes = []
+    const result = lexemes.map(lexeme => {
+      Lexeme.compound()
+      return this.input.slice(lexeme.begin, lexeme.end)
+    })
+    return result
   }
 }
