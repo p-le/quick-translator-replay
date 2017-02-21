@@ -1,6 +1,19 @@
 <template>
   <v-container fluid>
     <v-row>
+      <v-modal v-model="modal">
+        <v-card>
+          <v-card-text>
+            <h2 class="title">Use Google's location service?</h2>
+          </v-card-text>
+          <v-card-text class="subheading grey--text">Let google help apps determine location. This means sending anonymous location data to Google, even when no apps are running.</v-card-text>
+          <v-card-row actions>
+            <v-spacer></v-spacer>
+            <v-btn flat v-on:click.native="modal = false" class="primary--text">Cancel</v-btn>
+            <v-btn flat v-on:click.native="modal = false" class="primary--text">Submit</v-btn>
+          </v-card-row>
+        </v-card>
+      </v-modal>
       <v-col xs5="xs5">
         <v-tabs grow>
           <v-tab-item href="#c" ripple slot="activators">Gốc</v-tab-item>
@@ -113,16 +126,14 @@
   import { ipcRenderer, remote } from 'electron'
 
   const { Menu, MenuItem } = remote
-  const menu = new Menu()
-  menu.append(new MenuItem({label: 'Add Vietpharse', click () { console.log('item 1 clicked') }}))
-  menu.append(new MenuItem({type: 'separator'}))
-  menu.append(new MenuItem({label: 'Add Name'}))
 
   export default {
     name: 'trasnlate-window',
     data: () => {
       return {
-        lastTokens: []
+        lastTokens: [],
+        modal: false,
+        menu: new Menu()
       }
     },
     computed: {
@@ -161,6 +172,9 @@
       }
     },
     created () {
+      this.menu.append(new MenuItem({label: 'Thêm vào Từ điển Cụm Từ', click () { remote.getCurrentWebContents().send('OPEN_MODAL') }}))
+      this.menu.append(new MenuItem({type: 'separator'}))
+      this.menu.append(new MenuItem({label: 'Thêm vào từ điển Tên Riêng'}))
       ipcRenderer.on('model', (event, arg) => {
         this.$store.commit('TRANSLATE_ONEMEANING', arg)
       })
@@ -193,6 +207,9 @@
         this.$store.commit('SEARCH_SUBTOKEN_DONE', {
           result: result
         })
+      })
+      ipcRenderer.on('OPEN_MODAL', (event, arg) => {
+        this.modal = true
       })
     },
     methods: {
@@ -245,7 +262,7 @@
       },
       rightClickTranslated (event) {
         console.log(event.target)
-        menu.popup(remote.getCurrentWindow())
+        this.menu.popup(remote.getCurrentWindow())
       },
       chooseMeaning (target, meaning) {
         document.getElementsByClassName(target)[1].innerText = meaning
@@ -261,6 +278,9 @@
         Array.from(tokens).map(token => {
           token.className = token.className.replace(' underline', '')
         })
+      },
+      openModal () {
+        this.modal = true
       }
     }
   }
