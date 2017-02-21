@@ -3,6 +3,7 @@
 import { app, BrowserWindow, ipcMain, globalShortcut, clipboard } from 'electron'
 const electronLocalshortcut = require('electron-localshortcut')
 import { Translator, DictFinder } from './translate'
+import { AVLTree } from './utils/AVLTree'
 import { Segmenter } from './segmenter'
 
 let mainWindow
@@ -23,6 +24,8 @@ function createWindow () {
   const translator = new Translator()
   const dictFinder = new DictFinder()
   const segmenter = new Segmenter()
+  const avlTree = AVLTree.from([10, 20, 30, 40, 50, 25])
+  console.log(JSON.stringify(avlTree))
 
   mainWindow.on('closed', () => {
     mainWindow = null
