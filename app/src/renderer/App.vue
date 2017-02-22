@@ -166,4 +166,7 @@
   .chip {
     cursor: pointer;
   }
+  .title {
+    text-align: center;
+  }
 </style>
