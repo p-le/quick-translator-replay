@@ -34,8 +34,32 @@
           </v-list-item>
         </v-list>
       </v-sidebar>
+      <v-modal v-model="helpModal" bottom>
+          <v-card class="secondary white--text">
+            <v-card-text class="subheading white--text">
+              <v-row>
+                <v-col xs10>
+                  <v-list>
+                    <v-list-item>
+                      Ấn tổ hợp shortcut CRTL + V để Copy Text
+                    </v-list-item>
+                    <v-list-item>
+                      Ấn tổ hợp Alt + Left Click để lựa chọn từ
+                    </v-list-item>
+                  </v-list>
+                </v-col>
+                <v-col xs2>
+                    <v-btn primary dark @click.native="helpModal = false">Đóng</v-btn>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-modal>
       <v-content>
         <router-view></router-view>
+        <v-btn floating="floating" id="help__button" primary dark @click.native="helpModal = true">
+          <v-icon large>help_outline</v-icon>
+        </v-btn>
       </v-content>
     </main>
     <v-footer>
@@ -57,7 +81,8 @@
           { text: 'Translate', href: '/' },
           { text: 'Dict', href: '/dict' },
           { text: 'Test', href: '/test' }
-        ]
+        ],
+        helpModal: false
       }
     },
     created () {
@@ -168,5 +193,10 @@
   }
   .title {
     text-align: center;
+  }
+  #help__button {
+    position: fixed;
+    bottom: 50px;
+    right: 5px;
   }
 </style>

@@ -6,12 +6,15 @@
           <v-card-text>
             <h2 class="title">Cập nhật Từ điển</h2>
           </v-card-text>
-          <v-card-row height="75px" id="dict__choose__container">
-            <v-radio id="vietphrase" name="targetDict" label="Từ điển cụm từ" gap></v-radio>
-            <v-radio id="name" name="targetDict" label="Từ điển tên riêng" gap></v-radio>
+          <v-card-row height="75px" class="update__row">
+            <v-radio id="vietphrase" name="targetDict" label="Từ điển cụm từ" value="vietphrase" gap checked></v-radio>
+            <v-radio id="name" name="targetDict" label="Từ điển tên riêng" value="name" gap></v-radio>
           </v-card-row>
-          <v-card-row id="dict__update__container">
-            <v-progress-circular indeterminate v-bind:size="50" class="primary--text"/>
+          <v-card-row class="update__row">
+              <v-text-input id="update__original" name="updateOriginal" label="Gốc" v-model="updateOriginal"></v-text-input>
+          </v-card-row>
+          <v-card-row class="update__row">
+            <v-text-input id="update__translated" name="updateTranslated" label="Nghĩa" v-model="updateTranslated"></v-text-input>
           </v-card-row>
           <v-card-row actions>
             <v-btn primary dark v-on:click.native="modal = false">Hủy</v-btn>
@@ -142,7 +145,9 @@
       return {
         lastTokens: [],
         modal: false,
-        menu: new Menu()
+        menu: new Menu(),
+        updateOriginal: '',
+        updateTranslated: ''
       }
     },
     computed: {
@@ -270,11 +275,17 @@
         ipcRenderer.send('search/dict/subtoken', selected)
       },
       rightClickOriginal (event) {
-        console.log(event.target)
+        const tokens = document.getElementsByClassName(event.target.className)
+        const [original, translated] = Array.from(tokens)
+        this.updateOriginal = original.innerText
+        this.updateTranslated = translated.innerText
         this.menu.popup(remote.getCurrentWindow())
       },
       rightClickTranslated (event) {
-        console.log(event.target)
+        const tokens = document.getElementsByClassName(event.target.className)
+        const [original, translated] = Array.from(tokens)
+        this.updateOriginal = original.innerText
+        this.updateTranslated = translated.innerText
         this.menu.popup(remote.getCurrentWindow())
       },
       chooseMeaning (target, meaning) {
@@ -378,7 +389,7 @@
   flex-wrap: wrap;
   justify-content: space-around;
 }
-#dict__choose__container {
+.update__row {
   padding-left: 15px;
   padding-right: 15px;
 }

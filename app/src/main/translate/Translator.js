@@ -212,7 +212,7 @@ export class Translator {
 
   getSubTokens (text) {
     return new Promise((resolve, reject) => {
-      resolve(this.segmenter.analyze(text).split(' '))
+      resolve(this.segmenter.analyze(text).split(' ').filter(token => token.length > 0))
     })
   }
 }

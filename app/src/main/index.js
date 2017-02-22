@@ -61,6 +61,7 @@ function createWindow () {
       translator.getSubTokens(text)
     ]).then(
       ([lacvietResult, babylonResult, thieuchuuResult, subTokens]) => {
+        console.log('result + ', [lacvietResult, babylonResult, thieuchuuResult, subTokens])
         event.sender.send('search/dict/text/result', {
           lacvietResult,
           babylonResult,

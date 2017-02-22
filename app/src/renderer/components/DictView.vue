@@ -48,12 +48,11 @@
             })
           }
         }
-        console.log(this.dicts)
       })
     },
     methods: {
       viewDict (name) {
-        console.log(name)
+        // console.log(name)
       }
     }
   }
