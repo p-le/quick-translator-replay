@@ -26,14 +26,17 @@
           <v-tab-item href="cv" ripple slot="activators">Trung</v-tab-item>
           <v-tab-content id="c" slot="content">
             <v-card>
-              <v-card-text @mouseup="select" v-if="isTranslatingModel">
+              <v-card-text @mouseup.alt="select" v-if="isTranslatingModel">
                 {{ text }} 
               </v-card-text>
-              <v-card-text @mouseup="select" v-else>
+              <v-card-text @mouseup.alt="select" v-else>
                 <p v-for="(line, i) in tokenizedLines">
                   <span v-for="(token, j) in line"  :class="['tw', `tw-${i}${j}`]" 
                     @mouseover="mouseover($event)" @mouseout="mouseout($event)" 
-                    @click="clickOriginal($event)">{{token}}</span><br />
+                    @click.alt="clickOriginal($event)"
+                    @contextmenu="rightClickOriginal($event)"
+                  >
+                    {{token}}</span><br />
                 </p>
               </v-card-text>
             </v-card>
@@ -61,7 +64,7 @@
                       <span :class="['tw', `tw-${i}${j}`]"
                         @mouseover="mouseover($event)"
                         @mouseout="mouseout($event)"
-                        @click="clickTranslated($event)" 
+                        @click.alt="clickTranslated($event)" 
                         @contextmenu="rightClickTranslated($event)"
                         v-if="token.indexOf('/') === -1"
                       >
@@ -71,7 +74,7 @@
                         <span :class="['tw', `tw-${i}${j}`]"
                           @mouseover="mouseover($event)"
                           @mouseout="mouseout($event)"
-                          @click="clickTranslated($event)" 
+                          @click.alt="clickTranslated($event)" 
                           @contextmenu="rightClickTranslated($event)"
                         >
                           {{ token }}
@@ -265,6 +268,10 @@
       clickSubtoken (event) {
         const selected = event.target.innerText
         ipcRenderer.send('search/dict/subtoken', selected)
+      },
+      rightClickOriginal (event) {
+        console.log(event.target)
+        this.menu.popup(remote.getCurrentWindow())
       },
       rightClickTranslated (event) {
         console.log(event.target)
