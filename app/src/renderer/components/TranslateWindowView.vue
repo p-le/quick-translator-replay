@@ -7,8 +7,8 @@
             <h2 class="title">Cập nhật Từ điển</h2>
           </v-card-text>
           <v-card-row height="75px" class="update__row">
-            <v-radio id="vietphrase" name="targetDict" label="Từ điển cụm từ" value="vietphrase" gap checked></v-radio>
-            <v-radio id="name" name="targetDict" label="Từ điển tên riêng" value="name" gap></v-radio>
+            <v-radio id="vietphrase" name="targetDict" label="Từ điển cụm từ" value="vietphrase" gap checked v-model="targetDict"></v-radio>
+            <v-radio id="name" name="targetDict" label="Từ điển tên riêng" value="name" v-model="targetDict" gap></v-radio>
           </v-card-row>
           <v-card-row class="update__row">
               <v-text-input id="update__original" name="updateOriginal" label="Gốc" v-model="updateOriginal"></v-text-input>
@@ -19,7 +19,7 @@
           <v-card-row actions>
             <v-btn primary dark v-on:click.native="modal = false">Hủy</v-btn>
             <v-spacer></v-spacer>
-            <v-btn primary dark v-on:click.native="modal = false">Đồng ý</v-btn>
+            <v-btn primary dark v-on:click.native="updateDict()">Đồng ý</v-btn>
           </v-card-row>
         </v-card>
       </v-modal>
@@ -34,7 +34,7 @@
               </v-card-text>
               <v-card-text @mouseup.alt="select" v-else>
                 <p v-for="(line, i) in tokenizedLines">
-                  <span v-for="(token, j) in line"  :class="['tw', `tw-${i}${j}`]" 
+                  <span v-for="(token, j) in line"  :class="['tw', `tw-${i}-${j}`]" 
                     @mouseover="mouseover($event)" @mouseout="mouseout($event)" 
                     @click.alt="clickOriginal($event)"
                     @contextmenu="rightClickOriginal($event)"
@@ -64,7 +64,7 @@
               <v-card-text v-else >
                 <p v-for="(line, i) in tokenizedTranslateLines">
                     <template v-for="(token, j) in line">
-                      <span :class="['tw', `tw-${i}${j}`]"
+                      <span :class="['tw', `tw-${i}-${j}`]"
                         @mouseover="mouseover($event)"
                         @mouseout="mouseout($event)"
                         @click.alt="clickTranslated($event)" 
@@ -74,7 +74,7 @@
                         {{ token }}
                       </span>
                       <span v-else>
-                        <span :class="['tw', `tw-${i}${j}`]"
+                        <span :class="['tw', `tw-${i}-${j}`]"
                           @mouseover="mouseover($event)"
                           @mouseout="mouseout($event)"
                           @click.alt="clickTranslated($event)" 
@@ -86,7 +86,7 @@
                           <v-icon class="blue--text text--darken-2 more" slot="activator">reply</v-icon>
                           <v-list>
                             <v-list-item v-for="item in token.split('/')">
-                              <v-list-tile @click.native="chooseMeaning(`tw tw-${i}${j}`, item)">
+                              <v-list-tile @click.native="chooseMeaning(`tw tw-${i}-${j}`, item)">
                                 <v-list-tile-title>{{ item }}</v-list-tile-title>
                               </v-list-tile>
                             </v-list-item>
@@ -147,7 +147,8 @@
         modal: false,
         menu: new Menu(),
         updateOriginal: '',
-        updateTranslated: ''
+        updateTranslated: '',
+        targetDict: 'vietphrase'
       }
     },
     computed: {
@@ -275,17 +276,17 @@
         ipcRenderer.send('search/dict/subtoken', selected)
       },
       rightClickOriginal (event) {
-        const tokens = document.getElementsByClassName(event.target.className)
-        const [original, translated] = Array.from(tokens)
-        this.updateOriginal = original.innerText
-        this.updateTranslated = translated.innerText
+        /* eslint no-unused-vars: "off" */
+        const [c, i, j] = event.target.className.split(' ')[1].split('-')
+        this.updateOriginal = this.tokenizedLines[i][j]
+        this.updateTranslated = this.tokenizedTranslateLines[i][j]
         this.menu.popup(remote.getCurrentWindow())
       },
       rightClickTranslated (event) {
-        const tokens = document.getElementsByClassName(event.target.className)
-        const [original, translated] = Array.from(tokens)
-        this.updateOriginal = original.innerText
-        this.updateTranslated = translated.innerText
+        /* eslint no-unused-vars: "off" */
+        const [c, i, j] = event.target.className.split(' ')[1].split('-')
+        this.updateOriginal = this.tokenizedLines[i][j]
+        this.updateTranslated = this.tokenizedTranslateLines[i][j]
         this.menu.popup(remote.getCurrentWindow())
       },
       chooseMeaning (target, meaning) {
@@ -305,6 +306,10 @@
       },
       openModal () {
         this.modal = true
+      },
+      updateDict () {
+        console.log(this.targetDict)
+        this.modal = false
       }
     }
   }

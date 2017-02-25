@@ -19,17 +19,17 @@
         <v-list>
           <v-list-item>
             <v-list-tile router ripple href="/">
-                <v-list-tile-title>Translate</v-list-tile-title> 
+              <v-list-tile-title>Translate</v-list-tile-title> 
             </v-list-tile>
           </v-list-item>
           <v-list-item>
             <v-list-tile router ripple href="/dict">
-                <v-list-tile-title>Dict</v-list-tile-title> 
+              <v-list-tile-title>Dict</v-list-tile-title> 
             </v-list-tile>
           </v-list-item>
           <v-list-item>
             <v-list-tile router ripple href="/test">
-                <v-list-tile-title>Test</v-list-tile-title> 
+              <v-list-tile-title>Test</v-list-tile-title> 
             </v-list-tile>
           </v-list-item>
         </v-list>
