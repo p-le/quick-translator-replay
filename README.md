@@ -1,4 +1,4 @@
-# Quick Transolator
+# Quick Translator
 
 > An electron-vue project
 
