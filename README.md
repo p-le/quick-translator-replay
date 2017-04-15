@@ -1,4 +1,4 @@
-# electron-vlax
+# Quick Transolator
 
 > An electron-vue project
 
